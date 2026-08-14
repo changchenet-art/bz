@@ -242,7 +242,7 @@ const Store = {
     try{ this.data = JSON.parse(localStorage.getItem(DB_KEY)) || {}; }
     catch(e){ this.data = {}; }
     // 컬렉션 초기화
-    ["todos","vendors","orders","contacts","docs","contracts","employees","leaves","budgets","txns","payments"].forEach(k=>{ if(!this.data[k]) this.data[k]=[]; });
+    ["todos","vendors","orders","contacts","docs","contracts","employees","leaves","budgets","txns","payments","costs"].forEach(k=>{ if(!this.data[k]) this.data[k]=[]; });
     if(!this.data._meta) this.data._meta={created:todayStr()};
   },
   saveLocal(){ localStorage.setItem(DB_KEY, JSON.stringify(this.data)); },
@@ -273,7 +273,8 @@ const OPT = {
   account:["매출","용역수입","급여","4대보험","임차료","수도광열비","통신비","소모품비","지급수수료","교육훈련비","여비교통비","접대비","광고선전비","세금과공과","외주비","강사료","자문료","기타"],
   // ㈜창체넷 금전출납 계정과목 체계
   ledgerAccount:["111. 학교","112.정부.지자체,교육청","113.기관","114.기업","115. 기타","121. 교구 (완제품)","122. 교재 (출판인쇄)","123. 재료 (커피점토외)","124. 기타","131. 개발 지원금","132. 인건비 (사회적기업) 보조금","133. 위탁운영 보조금","134. 기타","141. SW개발 제작","142. 디자인,외 지식 콘텐츠 제작","143. 학술 연구개발","211. 경영 마케팅 자문비","212. 전문자문비","213.  강사비","221. 위탁 기술개발비","222. 시제품, 견본 제작비","223. 원재료구입비","224. 역량강화비","225. 연구활동비","226. 연구원 인건비","227. 임차비","228.기술자문비","229. IP확보","231. 식비,간식비","232. 의복비","233. 여가 및 의료비","241. 광고 출력비","242. 홍보 마케팅 관리비","243. 홍보물 구입","251. 도서 인쇄비","252. 비품구입","253. 교육훈련비","254. 소모품비","255. 접대비","256. 여비 및 교통비","257. 운반, 포장비","258. 임차경비","259. 재료비","260. 소프트웨어 구입 및 임차","261. 회의비","262. 위탁의뢰비","271. 차량 유지비","272. 차량 구입, 임차","311. 급여","312. 퇴직 적립금","313. 사회보험부담금","314. 일용근로비","315. 제수당","316. 상여금","321. 임차료","322. 수도광열비","323.  수선비","324. 통신비","325. 기타","411. 이자수입","412. 잡이익","413. 이월금","414. 기타  수익","511. 지급수수료","512. 기부금","513. 잡손실","514. 지급이자","516. 감가상각비","517. 기타 지출","611. 법인세 및 지방세","612. 보험료","613. 공공요금","721. 선입금","722. 가지급금","723. 대출금","731. 차입금 (대차용금)","732. 차출금 (대차용금)","741. 예정수익","742. 예정지출","743. 보통예금","744. 가수금"],
-  incomeType:["기타소득(8.8%)","사업소득(3.3%)"]
+  incomeType:["기타소득(8.8%)","사업소득(3.3%)"],
+  costCategory:["교구","교재","재료","인쇄","장비","외주","자문","운송","기타"]
 };
 
 /* ---------- ㈜창체넷 기초자료 (잔고·주민번호·급여 등 민감정보 제외) ---------- */
@@ -445,6 +446,24 @@ const SCHEMA = {
     },
     sort:(a,b)=>(b.start||"").localeCompare(a.start||""),
     search:["emp","type","reason"]
+  },
+  costs:{
+    title:"원가 대장 (품목별 구매단가)", icon:"🧾", sub:"구매 이력·단가 축적 → 견적 이윤 계산의 원가 기준",
+    fields:[
+      {k:"item",label:"품목명",req:1},
+      {k:"category",label:"구분",type:"select",opt:OPT.costCategory},
+      {k:"vendor",label:"구매처",type:"vendor"},
+      {k:"unitCost",label:"구매단가(원가, 원)",type:"number",req:1},
+      {k:"unit",label:"단위",def:()=>"개"},
+      {k:"qty",label:"구매수량",type:"number"},
+      {k:"date",label:"구매일",type:"date",def:todayStr},
+      {k:"memo",label:"규격/비고",type:"textarea",full:1}
+    ],
+    cols:["item","category","vendor","unitCost","unit","date"],
+    colLabels:{item:"품목",category:"구분",vendor:"구매처",unitCost:"구매단가",unit:"단위",date:"구매일"},
+    render:{ unitCost:v=>`<span class="num">${won(v)}</span>` },
+    sort:(a,b)=>(a.item||"").localeCompare(b.item||"")||(b.date||"").localeCompare(a.date||""),
+    search:["item","vendor","category","memo"]
   }
 };
 
@@ -466,6 +485,7 @@ const NAV = [
   {grp:"회계·자금"},
   {id:"txns",label:"거래내역·전표",icon:"💳"},
   {id:"payments",label:"강사·자문비 지급",icon:"💰"},
+  {id:"costs",label:"원가 대장",icon:"🧾"},
   {id:"budgets",label:"사업예산 집행",icon:"📈"},
   {grp:"조직·자료"},
   {id:"docs",label:"문서·인증 갱신",icon:"📑"},
@@ -1292,7 +1312,7 @@ const Backup={
 };
 
 /* ---------- 붙여넣기로 가져오기 (Claude가 만든 데이터를 한 번에 등록) ---------- */
-const COLL_LABEL={todos:"할 일",vendors:"거래처",orders:"발주·견적",contacts:"연락처",docs:"문서·인증",contracts:"계약",employees:"직원",leaves:"휴가·근태",budgets:"사업예산",txns:"거래내역·전표",payments:"강사·자문비"};
+const COLL_LABEL={todos:"할 일",vendors:"거래처",orders:"발주·견적",contacts:"연락처",docs:"문서·인증",contracts:"계약",employees:"직원",leaves:"휴가·근태",budgets:"사업예산",txns:"거래내역·전표",payments:"강사·자문비",costs:"원가 대장"};
 function labelOf(k){ return COLL_LABEL[k]||k; }
 function openPasteImport(){
   openModal("📋 붙여넣기로 가져오기",
@@ -1314,7 +1334,7 @@ function runPasteImport(){
   if(!raw){ toast("붙여넣은 내용이 없습니다"); return; }
   let obj; try{ obj=JSON.parse(raw); }
   catch(e){ $('#pasteMsg').innerHTML=`<span style="color:var(--danger)">JSON 형식 오류: ${esc(e.message)}</span>`; return; }
-  const known=["todos","vendors","orders","contacts","docs","contracts","employees","leaves","budgets","txns","payments"];
+  const known=["todos","vendors","orders","contacts","docs","contracts","employees","leaves","budgets","txns","payments","costs"];
   let total=0; const report=[];
   Object.keys(obj).forEach(k=>{
     if(!known.includes(k)){ report.push(`⚠️ '${esc(k)}' 는 알 수 없는 항목 — 건너뜀`); return; }
