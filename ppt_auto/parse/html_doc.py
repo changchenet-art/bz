@@ -80,11 +80,20 @@ def parse(html: str, *, skin: str = DEFAULT_SKIN) -> Deck:
 
         # 항목: chip 우선, 없으면 li
         items: list[Item] = []
+        seen: set[str] = set()
         for el in sec.find_all(True):
-            if _CHIP.search(_classes(el)) and not _SKIP.search(_classes(el)):
-                tx = _txt(el)
-                if tx and len(tx) < 40:
-                    items.append(Item(heading=tx, icon=guess_icon(tx)))
+            cls = _classes(el)
+            if not (_CHIP.search(cls) and not _SKIP.search(cls)):
+                continue
+            # 컨테이너(내부에 또 다른 chip 이 있는 래퍼: 예 .chips)는 건너뛰고
+            # 리프 칩만 잡아 '전체문장 + 개별칩' 중복을 막는다.
+            if any(d is not el and _CHIP.search(_classes(d))
+                   for d in el.find_all(True)):
+                continue
+            tx = _txt(el)
+            if tx and len(tx) < 40 and tx not in seen:
+                seen.add(tx)
+                items.append(Item(heading=tx, icon=guess_icon(tx)))
         if not items:
             for li in sec.find_all("li"):
                 tx = _txt(li)

@@ -21,7 +21,11 @@ class Palette:
     accent: str      # 포인트(단계 번호, 바)
     muted: str       # 보조 텍스트
     card: str        # 카드/박스 배경
-    on_primary: str = "#FFFFFF"  # primary 위 텍스트
+    on_primary: str = "#FFFFFF"  # primary(네이비) 위 텍스트
+    card_line: str = "#E7ECF0"   # 흰 카드 테두리
+    soft: str = "#EEF3F7"        # 칩·표 헤더 등 옅은 톤 배경
+    soft_ink: str = "#31637F"    # 옅은 톤 위 텍스트
+    highlight: str = "#FFF3C4"   # 키워드 형광 하이라이트
 
 
 @dataclass
@@ -100,9 +104,19 @@ SKINS: dict[str, Skin] = {
                         card="#0D6E8C", on_primary="#FFFFFF"),
         heading_font="프리텐다드", body_font="맑은 고딕",
         best_for=["교육·강의", "해양교육"]),
+
+    # ── 발표노트 예시 팔레트를 그대로 옮긴 정본 스킨 ─────────────
+    #    밝은 회색 배경 + 흰 카드(그림자) + 네이비 헤더 + 골드/그린 포인트
+    "report_navy": Skin(
+        key="report_navy", ko_name="리포트 네이비", mood="정갈·신뢰·제안발표",
+        palette=Palette(bg="#F4F6F8", ink="#1F2A33", primary="#0B3A5B",
+                        secondary="#31637F", accent="#D9A400", muted="#5B6770",
+                        card="#FFFFFF", on_primary="#FFFFFF"),
+        heading_font="맑은 고딕", body_font="맑은 고딕",
+        best_for=["제안·발표", "사내·기관 보고", "격식 있는 설명"]),
 }
 
-DEFAULT_SKIN = "beige_business"
+DEFAULT_SKIN = "report_navy"
 
 
 def get(key: str) -> Skin:
