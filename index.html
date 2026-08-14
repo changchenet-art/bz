@@ -175,6 +175,8 @@
     <div class="brand">
       <h1>경리 업무지원실</h1>
       <p>통합 관리 시스템 v1.0</p>
+      <div id="syncStatus" onclick="Sync.start()" title="클릭하면 서버 재접속을 시도합니다"
+           style="margin-top:8px;font-size:11px;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.08);cursor:pointer;display:inline-block">⚪ 확인 중…</div>
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="foot">
@@ -242,7 +244,8 @@ const Store = {
     ["todos","vendors","orders","contacts","docs","contracts","employees","leaves","budgets","txns","payments"].forEach(k=>{ if(!this.data[k]) this.data[k]=[]; });
     if(!this.data._meta) this.data._meta={created:todayStr()};
   },
-  save(){ localStorage.setItem(DB_KEY, JSON.stringify(this.data)); },
+  saveLocal(){ localStorage.setItem(DB_KEY, JSON.stringify(this.data)); },
+  save(){ this.saveLocal(); if(window.Sync) Sync.pushSoon(); },
   list(k){ return this.data[k] || []; },
   get(k,id){ return this.list(k).find(x=>x.id===id); },
   upsert(k,obj){
@@ -1288,14 +1291,91 @@ const Backup={
 };
 
 /* ============================================================
+   서버 동기화 (카페24 PHP+MySQL) — 온라인이면 서버에 저장/불러오기
+   서버(api.php)가 없으면 자동으로 이 PC 저장(오프라인) 방식으로 동작
+   ============================================================ */
+const Sync={
+  mode:"offline", _t:null,
+  pw(){ return sessionStorage.getItem('app_pw')||''; },
+  setStatus(s){
+    const el=$('#syncStatus'); if(!el) return;
+    const map={
+      checking:["⚪ 확인 중…","rgba(255,255,255,.08)"],
+      offline:["⚪ 이 PC에 저장","rgba(255,255,255,.08)"],
+      online:["🟢 서버 저장됨","rgba(34,160,110,.35)"],
+      saving:["🟡 저장 중…","rgba(210,170,40,.35)"],
+      error:["🔴 저장 실패·클릭","rgba(200,70,60,.4)"]
+    };
+    const m=map[s]||map.offline; el.textContent=m[0]; el.style.background=m[1];
+  },
+  async start(){
+    this.setStatus("checking");
+    if(location.protocol==='file:'){ this.mode="offline"; this.setStatus("offline"); return; }
+    let ping;
+    try{ ping=await fetch('./api.php?action=ping',{cache:'no-store'}); }
+    catch(e){ this.mode="offline"; this.setStatus("offline"); return; }
+    if(!ping.ok){ this.mode="offline"; this.setStatus("offline"); return; }
+    this.mode="online";
+    if(this.pw() && await this.load()) return;
+    this.showLogin();
+  },
+  showLogin(){
+    openModal("서버 접속",
+      `<div class="frm"><div class="fld full">
+        <label>접속 비밀번호</label>
+        <input type="password" id="loginPw" placeholder="config.php에 정한 비밀번호" onkeydown="if(event.key==='Enter')Sync.doLogin()">
+        <div class="hint" style="margin-top:6px">여러 기기에서 같은 데이터로 접속합니다. 비밀번호는 관리자가 정한 값입니다.</div>
+      </div></div>`,
+      `<button class="btn" onclick="closeModal()">오프라인으로 사용</button>
+       <button class="btn primary" onclick="Sync.doLogin()">접속</button>`);
+    setTimeout(()=>{const i=$('#loginPw'); if(i) i.focus();},100);
+  },
+  async doLogin(){
+    const i=$('#loginPw'); if(!i) return;
+    sessionStorage.setItem('app_pw', i.value);
+    if(await this.load()){ closeModal(); toast("서버에 접속했습니다"); }
+    else { toast("접속 실패 — 비밀번호를 확인하세요"); }
+  },
+  async load(){
+    try{
+      const r=await fetch('./api.php?action=load',{headers:{'X-App-PW':this.pw()},cache:'no-store'});
+      if(r.status===401){ sessionStorage.removeItem('app_pw'); return false; }
+      if(!r.ok) throw 0;
+      const j=await r.json();
+      if(j.payload){ Store.data=JSON.parse(j.payload); Store.saveLocal(); }
+      else { await this.push(true); }   // 서버가 비어있으면 현재 데이터로 초기화
+      this.setStatus("online");
+      if(Router.current) Router.go(Router.current);
+      return true;
+    }catch(e){ this.setStatus("error"); return false; }
+  },
+  pushSoon(){ if(this.mode!=="online") return; clearTimeout(this._t); this._t=setTimeout(()=>this.push(),1200); },
+  async push(silent){
+    if(this.mode!=="online") return;
+    try{
+      if(!silent) this.setStatus("saving");
+      const r=await fetch('./api.php?action=save',{method:'POST',
+        headers:{'X-App-PW':this.pw(),'Content-Type':'application/json'},
+        body:JSON.stringify({payload:Store.data})});
+      if(r.status===401){ this.setStatus("error"); this.showLogin(); return; }
+      if(!r.ok) throw 0;
+      this.setStatus("online");
+    }catch(e){ this.setStatus("error"); }
+  }
+};
+
+/* ============================================================
    시작
    ============================================================ */
 function init(){
   Store.load();
   buildNav();
   const start=location.hash.slice(1)||"dashboard";
-  Router.go(start);
+  Router.go(start);          // 로컬 데이터로 즉시 표시
+  Sync.start();              // 온라인이면 서버 접속·동기화 (백그라운드)
 }
+// const 로 선언한 객체를 인라인 onclick 등에서 쓸 수 있도록 전역 노출
+window.Store=Store; window.Router=Router; window.Sync=Sync; window.Backup=Backup; window.OPT=OPT;
 init();
 </script>
 </body>
