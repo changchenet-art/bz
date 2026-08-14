@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>경리회계 업무지원실 · 통합 관리 시스템</title>
+<style>
+  :root{
+    --bg:#f4f6f9; --panel:#ffffff; --ink:#1f2a37; --muted:#6b7684;
+    --line:#e4e8ee; --line2:#eef1f5;
+    --brand:#127a5b; --brand-ink:#0e5c45; --brand-soft:#e7f4ee;
+    --blue:#1e6fd9; --blue-soft:#e8f0fc;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --danger:#c0392b; --danger-soft:#fdecea;
+    --ok:#127a5b; --ok-soft:#e7f4ee;
+    --shadow:0 1px 3px rgba(20,30,45,.06), 0 6px 20px rgba(20,30,45,.05);
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Malgun Gothic","맑은 고딕",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+    background:var(--bg); color:var(--ink); font-size:14px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit; cursor:pointer}
+  input,select,textarea{font-family:inherit; font-size:14px}
+
+  /* Layout */
+  .app{display:flex; min-height:100vh}
+  .side{
+    width:224px; flex:0 0 224px; background:#0f2b22; color:#cfe6dc;
+    display:flex; flex-direction:column; position:sticky; top:0; height:100vh;
+  }
+  .brand{padding:20px 18px 14px; border-bottom:1px solid rgba(255,255,255,.08)}
+  .brand h1{font-size:16px; margin:0; color:#fff; letter-spacing:-.3px}
+  .brand p{margin:4px 0 0; font-size:11px; color:#8fb9ab}
+  .nav{padding:10px 8px; overflow-y:auto; flex:1}
+  .nav .grp{font-size:10.5px; color:#6f9587; text-transform:uppercase; letter-spacing:.6px; padding:12px 12px 5px; font-weight:700}
+  .nav a{
+    display:flex; align-items:center; gap:9px; padding:9px 12px; border-radius:8px;
+    color:#cfe6dc; text-decoration:none; font-size:13px; margin:1px 0;
+  }
+  .nav a .ic{width:17px; text-align:center; font-size:14px}
+  .nav a:hover{background:rgba(255,255,255,.06)}
+  .nav a.active{background:var(--brand); color:#fff; font-weight:600}
+  .side .foot{padding:12px; border-top:1px solid rgba(255,255,255,.08); display:flex; flex-direction:column; gap:6px}
+  .side .foot button{
+    background:rgba(255,255,255,.08); color:#dff0e9; border:none; padding:8px; border-radius:7px; font-size:12px;
+  }
+  .side .foot button:hover{background:rgba(255,255,255,.16)}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .topbar{
+    background:var(--panel); border-bottom:1px solid var(--line); padding:14px 24px;
+    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:20;
+  }
+  .topbar h2{margin:0; font-size:18px; letter-spacing:-.4px}
+  .topbar .sub{font-size:12px; color:var(--muted); margin-top:2px}
+  .topbar .right{display:flex; align-items:center; gap:10px}
+  .content{padding:22px 24px 60px; max-width:1240px; width:100%}
+
+  /* Buttons */
+  .btn{border:1px solid var(--line); background:#fff; color:var(--ink); padding:8px 13px; border-radius:8px; font-size:13px; font-weight:600}
+  .btn:hover{background:#f7f9fb}
+  .btn.primary{background:var(--brand); border-color:var(--brand); color:#fff}
+  .btn.primary:hover{background:var(--brand-ink)}
+  .btn.sm{padding:5px 9px; font-size:12px; border-radius:6px; font-weight:500}
+  .btn.ghost{border-color:transparent; background:transparent; color:var(--muted)}
+  .btn.ghost:hover{background:#eef1f5; color:var(--ink)}
+  .btn.danger{color:var(--danger); border-color:#f0cdc8}
+  .btn.danger:hover{background:var(--danger-soft)}
+
+  /* Cards */
+  .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; margin-bottom:18px}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow)}
+  .card .k{font-size:12px; color:var(--muted); font-weight:600}
+  .card .v{font-size:24px; font-weight:800; letter-spacing:-.5px; margin-top:6px}
+  .card .v small{font-size:13px; font-weight:600; color:var(--muted)}
+  .card .sub{font-size:11.5px; color:var(--muted); margin-top:4px}
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:18px; overflow:hidden}
+  .panel .ph{padding:13px 18px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between}
+  .panel .ph h3{margin:0; font-size:14.5px}
+  .panel .ph .tools{display:flex; gap:7px; align-items:center; flex-wrap:wrap}
+  .panel .pb{padding:0}
+  .panel .pb.pad{padding:16px 18px}
+
+  /* Table */
+  .tbl{width:100%; border-collapse:collapse; font-size:13px}
+  .tbl th,.tbl td{padding:9px 12px; text-align:left; border-bottom:1px solid var(--line2); vertical-align:middle}
+  .tbl th{background:#fafbfc; font-size:11.5px; color:var(--muted); font-weight:700; text-transform:none; position:sticky; top:0}
+  .tbl tbody tr:hover, .tbl tbody tr:hover{background:#f9fbfc}
+  .tbl td.num, .tbl th.num{text-align:right; font-variant-numeric:tabular-nums}
+  .tbl .rowbtns{display:flex; gap:5px; justify-content:flex-end}
+  .tbl-wrap{overflow-x:auto}
+  .empty{padding:40px; text-align:center; color:var(--muted); font-size:13px}
+  .empty .big{font-size:30px; margin-bottom:8px; opacity:.5}
+
+  /* Badge */
+  .badge{display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:700; white-space:nowrap}
+  .badge.g{background:var(--ok-soft); color:var(--ok)}
+  .badge.b{background:var(--blue-soft); color:var(--blue)}
+  .badge.o{background:var(--warn-soft); color:var(--warn)}
+  .badge.r{background:var(--danger-soft); color:var(--danger)}
+  .badge.n{background:#eef1f5; color:var(--muted)}
+  .dday{font-weight:800; font-variant-numeric:tabular-nums}
+
+  /* Filters */
+  .filters{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .filters input,.filters select{border:1px solid var(--line); border-radius:7px; padding:7px 9px; background:#fff}
+  .filters input[type=search]{min-width:180px}
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden}
+  .seg button{border:none; background:#fff; padding:7px 12px; font-size:12.5px; color:var(--muted); border-right:1px solid var(--line)}
+  .seg button:last-child{border-right:none}
+  .seg button.on{background:var(--brand-soft); color:var(--brand-ink); font-weight:700}
+
+  /* Modal */
+  .mask{position:fixed; inset:0; background:rgba(15,25,20,.42); display:none; align-items:flex-start; justify-content:center; z-index:60; padding:40px 16px; overflow-y:auto}
+  .mask.on{display:flex}
+  .modal{background:#fff; width:100%; max-width:600px; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.25); overflow:hidden}
+  .modal.wide{max-width:900px}
+  .modal .mh{padding:16px 20px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between}
+  .modal .mh h3{margin:0; font-size:16px}
+  .modal .mb{padding:18px 20px; max-height:66vh; overflow-y:auto}
+  .modal .mf{padding:14px 20px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:8px; background:#fafbfc}
+  .close{border:none; background:none; font-size:22px; color:var(--muted); line-height:1; padding:0 4px}
+
+  /* Form */
+  .frm{display:grid; grid-template-columns:1fr 1fr; gap:13px 16px}
+  .frm .fld{display:flex; flex-direction:column; gap:5px}
+  .frm .fld.full{grid-column:1 / -1}
+  .frm label{font-size:12px; font-weight:700; color:#455161}
+  .frm label .req{color:var(--danger)}
+  .frm input,.frm select,.frm textarea{
+    border:1px solid var(--line); border-radius:8px; padding:9px 10px; background:#fff; width:100%;
+  }
+  .frm input:focus,.frm select:focus,.frm textarea:focus{outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
+  .frm textarea{resize:vertical; min-height:70px}
+  .hint{font-size:11px; color:var(--muted)}
+
+  .toast{position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px); background:#0f2b22; color:#fff; padding:11px 18px; border-radius:10px; font-size:13px; box-shadow:0 8px 24px rgba(0,0,0,.25); opacity:0; transition:.25s; z-index:100; pointer-events:none}
+  .toast.on{opacity:1; transform:translateX(-50%) translateY(0)}
+
+  .pill-row{display:flex; gap:6px; flex-wrap:wrap}
+  .mini{font-size:11.5px; color:var(--muted)}
+  .prog{height:7px; background:#eef1f5; border-radius:5px; overflow:hidden; min-width:70px}
+  .prog > i{display:block; height:100%; background:var(--brand)}
+  .sec-title{font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin:22px 0 8px}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+  @media(max-width:1000px){ .two-col{grid-template-columns:1fr} .frm{grid-template-columns:1fr} }
+  @media(max-width:760px){ .side{display:none} }
+
+  /* Print document */
+  .doc-preview{background:#fff; border:1px solid var(--line); border-radius:10px; padding:34px 40px; font-size:13.5px; color:#111}
+  .doc-preview h1{text-align:center; font-size:24px; letter-spacing:14px; margin:0 0 24px; border-bottom:3px double #111; padding-bottom:14px}
+  .doc-preview table{width:100%; border-collapse:collapse; margin:10px 0}
+  .doc-preview table th,.doc-preview table td{border:1px solid #333; padding:8px 10px}
+  .doc-preview table th{background:#f0f0f0; width:110px; text-align:center}
+  .doc-preview .right{text-align:right}
+  .doc-preview .center{text-align:center}
+  .doc-preview .sign{margin-top:36px; text-align:right; line-height:2.2}
+  @media print{
+    .side,.topbar,.no-print{display:none !important}
+    .content{padding:0; max-width:none}
+    body{background:#fff}
+    .doc-preview{border:none; border-radius:0; padding:0}
+    .panel{box-shadow:none; border:none}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side no-print">
+    <div class="brand">
+      <h1>경리 업무지원실</h1>
+      <p>통합 관리 시스템 v1.0</p>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">
+      <button onclick="Backup.export()">⬇ 전체 백업 (JSON)</button>
+      <button onclick="Backup.importPrompt()">⬆ 백업 복원</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar no-print">
+      <div>
+        <h2 id="pageTitle">대시보드</h2>
+        <div class="sub" id="pageSub"></div>
+      </div>
+      <div class="right" id="topActions"></div>
+    </div>
+    <div class="content" id="view"></div>
+  </div>
+</div>
+
+<div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="fileInput" accept=".json,.csv" style="display:none" />
+
+<script>
+/* ============================================================
+   경리회계 업무지원실 통합 관리 시스템 — 단일 파일 웹앱
+   데이터는 브라우저 localStorage에 자동 저장됩니다.
+   ============================================================ */
+"use strict";
+
+/* ---------- 유틸 ---------- */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const won = n => (Number(n)||0).toLocaleString('ko-KR');
+const todayStr = () => new Date().toISOString().slice(0,10);
+function daysBetween(dateStr){ // dateStr - today, in days (음수=지남)
+  if(!dateStr) return null;
+  const d = new Date(dateStr+"T00:00:00");
+  const t = new Date(todayStr()+"T00:00:00");
+  return Math.round((d - t)/86400000);
+}
+function ddayBadge(dateStr){
+  const d = daysBetween(dateStr);
+  if(d===null) return '<span class="mini">-</span>';
+  if(d<0)  return `<span class="badge r dday">D+${-d} 지남</span>`;
+  if(d===0)return `<span class="badge r dday">D-DAY</span>`;
+  if(d<=7) return `<span class="badge o dday">D-${d}</span>`;
+  if(d<=30)return `<span class="badge b dday">D-${d}</span>`;
+  return `<span class="badge n dday">D-${d}</span>`;
+}
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),2200); }
+
+/* ---------- 저장소 ---------- */
+const DB_KEY = "gyeongri_office_db_v1";
+const Store = {
+  data:null,
+  load(){
+    try{ this.data = JSON.parse(localStorage.getItem(DB_KEY)) || {}; }
+    catch(e){ this.data = {}; }
+    // 컬렉션 초기화
+    ["todos","vendors","orders","contacts","docs","contracts","employees","leaves","budgets","txns"].forEach(k=>{ if(!this.data[k]) this.data[k]=[]; });
+    if(!this.data._meta) this.data._meta={created:todayStr()};
+  },
+  save(){ localStorage.setItem(DB_KEY, JSON.stringify(this.data)); },
+  list(k){ return this.data[k] || []; },
+  get(k,id){ return this.list(k).find(x=>x.id===id); },
+  upsert(k,obj){
+    if(obj.id){ const i=this.data[k].findIndex(x=>x.id===obj.id); if(i>=0) this.data[k][i]={...this.data[k][i],...obj}; else this.data[k].push(obj); }
+    else { obj.id=uid(); obj._c=todayStr(); this.data[k].push(obj); }
+    this.save(); return obj;
+  },
+  remove(k,id){ this.data[k]=this.list(k).filter(x=>x.id!==id); this.save(); }
+};
+
+/* ---------- 옵션 ---------- */
+const OPT = {
+  todoStatus:["대기","진행중","완료","보류"],
+  priority:["높음","보통","낮음"],
+  orderKind:["견적","발주","진행중","완료","취소"],
+  contactType:["강사","위촉자문","거래처 담당","직원","기타"],
+  docType:["사업자등록증","통신판매업","인증서","면허/자격","보험","임대차계약","기타"],
+  docStatus:["유효","갱신필요","만료","진행중"],
+  contractStatus:["검토","진행중","완료","해지","보류"],
+  leaveType:["연차","반차(오전)","반차(오후)","병가","경조사","공가","기타"],
+  txnType:["수입","지출"],
+  payMethod:["법인통장","개인통장","법인카드","개인카드","현금","계좌이체"],
+  evidence:["세금계산서","계산서","카드전표","현금영수증","간이영수증","이체증","없음"],
+  account:["매출","용역수입","급여","4대보험","임차료","수도광열비","통신비","소모품비","지급수수료","교육훈련비","여비교통비","접대비","광고선전비","세금과공과","외주비","강사료","자문료","기타"]
+};
+
+/* ---------- 스키마 (제네릭 CRUD 모듈) ---------- */
+const SCHEMA = {
+  vendors:{
+    title:"거래처 관리", icon:"🏢", sub:"발주·견정 대상 거래처 정보",
+    fields:[
+      {k:"name",label:"상호/회사명",req:1},
+      {k:"bizno",label:"사업자등록번호"},
+      {k:"ceo",label:"대표자"},
+      {k:"manager",label:"담당자"},
+      {k:"phone",label:"연락처"},
+      {k:"email",label:"이메일"},
+      {k:"kind",label:"거래유형",type:"select",opt:["매입처","매출처","외주","기타"]},
+      {k:"addr",label:"주소",full:1},
+      {k:"memo",label:"메모",type:"textarea",full:1}
+    ],
+    cols:["name","kind","manager","phone","email"],
+    colLabels:{name:"상호",kind:"유형",manager:"담당자",phone:"연락처",email:"이메일"},
+    search:["name","manager","phone","email","bizno"]
+  },
+  orders:{
+    title:"발주 · 견적 관리", icon:"📦", sub:"견적서·발주 진행 현황",
+    fields:[
+      {k:"date",label:"일자",type:"date",req:1,def:todayStr},
+      {k:"kind",label:"구분",type:"select",opt:OPT.orderKind,req:1},
+      {k:"vendor",label:"거래처",type:"vendor"},
+      {k:"docno",label:"문서번호"},
+      {k:"item",label:"품목/내용",req:1,full:1},
+      {k:"qty",label:"수량",type:"number"},
+      {k:"amount",label:"금액(원)",type:"number"},
+      {k:"due",label:"납기/유효일",type:"date"},
+      {k:"memo",label:"비고",type:"textarea",full:1}
+    ],
+    cols:["date","kind","vendor","item","amount","status"],
+    colLabels:{date:"일자",kind:"구분",vendor:"거래처",item:"품목",amount:"금액",status:"상태"},
+    render:{
+      kind:v=>badgeFor(v,{"견적":"b","발주":"o","진행중":"o","완료":"g","취소":"n"}),
+      amount:v=>`<span class="num">${won(v)}</span>`,
+    },
+    search:["item","vendor","docno"]
+  },
+  contacts:{
+    title:"연락처 관리", icon:"👥", sub:"강사·위촉자문·주요 연락처",
+    fields:[
+      {k:"name",label:"이름",req:1},
+      {k:"type",label:"구분",type:"select",opt:OPT.contactType,req:1},
+      {k:"org",label:"소속"},
+      {k:"field",label:"전문분야"},
+      {k:"phone",label:"연락처"},
+      {k:"email",label:"이메일"},
+      {k:"bank",label:"계좌(자문료/강사료 지급용)"},
+      {k:"period",label:"위촉기간"},
+      {k:"memo",label:"메모",type:"textarea",full:1}
+    ],
+    cols:["name","type","org","field","phone"],
+    colLabels:{name:"이름",type:"구분",org:"소속",field:"전문분야",phone:"연락처"},
+    render:{ type:v=>badgeFor(v,{"강사":"b","위촉자문":"g","직원":"o"}) },
+    search:["name","org","field","phone","email"]
+  },
+  docs:{
+    title:"문서 · 인증 갱신 관리", icon:"📑", sub:"인증서·자격·보험 만료/갱신일 알림",
+    fields:[
+      {k:"name",label:"문서/인증명",req:1},
+      {k:"type",label:"종류",type:"select",opt:OPT.docType},
+      {k:"issuer",label:"발급기관"},
+      {k:"issued",label:"발급/취득일",type:"date"},
+      {k:"expire",label:"만료/갱신일",type:"date",req:1},
+      {k:"owner",label:"담당자"},
+      {k:"status",label:"상태",type:"select",opt:OPT.docStatus,def:()=>"유효"},
+      {k:"memo",label:"메모",type:"textarea",full:1}
+    ],
+    cols:["name","type","expire","dday","status"],
+    colLabels:{name:"문서/인증명",type:"종류",expire:"갱신일",dday:"남은기간",status:"상태"},
+    render:{
+      dday:(v,row)=>ddayBadge(row.expire),
+      status:v=>badgeFor(v,{"유효":"g","갱신필요":"o","만료":"r","진행중":"b"})
+    },
+    sort:(a,b)=>(a.expire||"9").localeCompare(b.expire||"9"),
+    search:["name","type","issuer","owner"]
+  },
+  contracts:{
+    title:"계약 관리", icon:"📝", sub:"계약 체결·집행 현황 및 착수계",
+    fields:[
+      {k:"name",label:"계약명",req:1},
+      {k:"party",label:"계약 상대방",type:"vendor"},
+      {k:"amount",label:"계약금액(원)",type:"number"},
+      {k:"start",label:"시작일",type:"date"},
+      {k:"end",label:"종료일",type:"date"},
+      {k:"status",label:"상태",type:"select",opt:OPT.contractStatus,def:()=>"진행중"},
+      {k:"started",label:"착수계 제출",type:"select",opt:["미제출","제출완료","해당없음"],def:()=>"미제출"},
+      {k:"budgetLink",label:"연결 사업(예산)"},
+      {k:"memo",label:"메모",type:"textarea",full:1}
+    ],
+    cols:["name","party","amount","end","status","started"],
+    colLabels:{name:"계약명",party:"상대방",amount:"계약금액",end:"종료일",status:"상태",started:"착수계"},
+    render:{
+      amount:v=>`<span class="num">${won(v)}</span>`,
+      status:v=>badgeFor(v,{"진행중":"o","완료":"g","해지":"r","검토":"b","보류":"n"}),
+      started:v=>badgeFor(v,{"제출완료":"g","미제출":"r","해당없음":"n"})
+    },
+    search:["name","party"]
+  },
+  employees:{
+    title:"직원 명부", icon:"🧑‍💼", sub:"근태·연차 관리 기준 정보",
+    fields:[
+      {k:"name",label:"이름",req:1},
+      {k:"dept",label:"부서"},
+      {k:"position",label:"직급"},
+      {k:"joined",label:"입사일",type:"date"},
+      {k:"annual",label:"연차 부여일수",type:"number",def:()=>15},
+      {k:"phone",label:"연락처"},
+      {k:"memo",label:"메모",type:"textarea",full:1}
+    ],
+    cols:["name","dept","position","joined","leaveUsed"],
+    colLabels:{name:"이름",dept:"부서",position:"직급",joined:"입사일",leaveUsed:"연차 사용/잔여"},
+    render:{ leaveUsed:(v,row)=>{
+      const used=leaveUsedDays(row.name);
+      const total=Number(row.annual)||0;
+      return `<span class="num">${used} / 잔여 ${Math.max(0,total-used)}</span>`;
+    }},
+    search:["name","dept","position"]
+  },
+  leaves:{
+    title:"휴가 · 근태 관리", icon:"🌴", sub:"휴가 신청 및 사용 내역",
+    fields:[
+      {k:"emp",label:"직원",type:"employee",req:1},
+      {k:"type",label:"종류",type:"select",opt:OPT.leaveType,req:1},
+      {k:"start",label:"시작일",type:"date",req:1,def:todayStr},
+      {k:"end",label:"종료일",type:"date"},
+      {k:"days",label:"사용일수",type:"number",def:()=>1},
+      {k:"reason",label:"사유",full:1},
+      {k:"approved",label:"승인",type:"select",opt:["신청","승인","반려"],def:()=>"신청"}
+    ],
+    cols:["emp","type","start","end","days","approved"],
+    colLabels:{emp:"직원",type:"종류",start:"시작",end:"종료",days:"일수",approved:"상태"},
+    render:{
+      days:v=>`<span class="num">${v}</span>`,
+      approved:v=>badgeFor(v,{"승인":"g","신청":"o","반려":"r"})
+    },
+    sort:(a,b)=>(b.start||"").localeCompare(a.start||""),
+    search:["emp","type","reason"]
+  }
+};
+
+function badgeFor(v,map){ const c=map[v]||"n"; return `<span class="badge ${c}">${esc(v)}</span>`; }
+function leaveUsedDays(empName){
+  return Store.list("leaves").filter(l=>l.emp===empName && l.approved!=="반려").reduce((s,l)=>s+(Number(l.days)||0),0);
+}
+
+/* ---------- 내비게이션 ---------- */
+const NAV = [
+  {grp:"현황"},
+  {id:"dashboard",label:"대시보드",icon:"📊"},
+  {id:"todos",label:"할 일 · 업무진도",icon:"✅"},
+  {grp:"거래·계약"},
+  {id:"vendors",label:"거래처",icon:"🏢"},
+  {id:"orders",label:"발주·견적",icon:"📦"},
+  {id:"contracts",label:"계약 관리",icon:"📝"},
+  {id:"docgen",label:"문서 생성",icon:"🖨️"},
+  {grp:"회계·자금"},
+  {id:"txns",label:"거래내역·전표",icon:"💳"},
+  {id:"budgets",label:"사업예산 집행",icon:"📈"},
+  {grp:"조직·자료"},
+  {id:"docs",label:"문서·인증 갱신",icon:"📑"},
+  {id:"contacts",label:"연락처",icon:"👥"},
+  {id:"employees",label:"직원 명부",icon:"🧑‍💼"},
+  {id:"leaves",label:"휴가·근태",icon:"🌴"},
+];
+
+function buildNav(){
+  const nav=$('#nav');
+  nav.innerHTML = NAV.map(n=>{
+    if(n.grp) return `<div class="grp">${n.grp}</div>`;
+    return `<a href="#${n.id}" data-id="${n.id}"><span class="ic">${n.icon}</span>${n.label}</a>`;
+  }).join('');
+}
+
+/* ---------- 라우터 ---------- */
+const Router = {
+  current:"dashboard",
+  go(id){
+    if(!id) id="dashboard";
+    this.current=id;
+    location.hash=id;
+    $$('#nav a').forEach(a=>a.classList.toggle('active', a.dataset.id===id));
+    render(id);
+    window.scrollTo(0,0);
+  }
+};
+window.addEventListener('hashchange',()=>{ const id=location.hash.slice(1); if(id!==Router.current) Router.go(id); });
+
+/* ---------- 렌더 진입 ---------- */
+function setHeader(title,sub,actionsHtml=""){
+  $('#pageTitle').textContent=title;
+  $('#pageSub').textContent=sub||"";
+  $('#topActions').innerHTML=actionsHtml;
+}
+function render(id){
+  if(id==="dashboard") return renderDashboard();
+  if(id==="todos") return renderTodos();
+  if(id==="txns") return renderTxns();
+  if(id==="budgets") return renderBudgets();
+  if(id==="docgen") return renderDocGen();
+  if(SCHEMA[id]) return renderGeneric(id);
+  return renderDashboard();
+}
+
+/* ---------- 제네릭 목록/폼 ---------- */
+let genState={};
+function renderGeneric(key){
+  const s=SCHEMA[key];
+  setHeader(s.title, s.sub,
+    `<button class="btn" onclick="exportCSV('${key}')">엑셀(CSV) 내보내기</button>
+     <button class="btn primary" onclick="openForm('${key}')">+ 새로 추가</button>`);
+  genState[key]=genState[key]||{q:""};
+  const view=$('#view');
+  view.innerHTML=`
+    <div class="panel">
+      <div class="ph">
+        <div class="filters">
+          <input type="search" id="q_${key}" placeholder="검색…" value="${esc(genState[key].q)}" />
+        </div>
+        <div class="tools mini" id="count_${key}"></div>
+      </div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr>
+        ${s.cols.map(c=>`<th class="${isNumCol(s,c)?'num':''}">${esc(s.colLabels[c]||c)}</th>`).join('')}
+        <th style="width:96px"></th>
+      </tr></thead><tbody id="rows_${key}"></tbody></table></div>
+    </div>`;
+  $(`#q_${key}`).addEventListener('input',e=>{genState[key].q=e.target.value; drawRows(key);});
+  drawRows(key);
+}
+function isNumCol(s,c){ return s.render&&s.render[c]&&/num/.test((s.render[c](0,{})||'')); }
+function drawRows(key){
+  const s=SCHEMA[key]; let rows=Store.list(key).slice();
+  const q=(genState[key].q||"").toLowerCase().trim();
+  if(q) rows=rows.filter(r=>(s.search||s.cols).some(f=>String(r[f]??"").toLowerCase().includes(q)));
+  if(s.sort) rows.sort(s.sort);
+  $(`#count_${key}`).textContent=`${rows.length}건`;
+  const tb=$(`#rows_${key}`);
+  if(!rows.length){ tb.innerHTML=`<tr><td colspan="${s.cols.length+1}"><div class="empty"><div class="big">${s.icon}</div>등록된 항목이 없습니다. ‘새로 추가’를 눌러 시작하세요.</div></td></tr>`; return; }
+  tb.innerHTML=rows.map(r=>{
+    const tds=s.cols.map(c=>{
+      let val = s.render&&s.render[c] ? s.render[c](r[c],r) : esc(r[c]??"");
+      const numc = (''+val).includes('class="num"')||isNumCol(s,c);
+      return `<td class="${numc?'num':''}">${val||'<span class="mini">-</span>'}</td>`;
+    }).join('');
+    return `<tr>${tds}<td><div class="rowbtns">
+      <button class="btn sm ghost" onclick="openForm('${key}','${r.id}')">수정</button>
+      <button class="btn sm ghost" onclick="delItem('${key}','${r.id}')">🗑</button>
+    </div></td></tr>`;
+  }).join('');
+}
+
+function fieldInput(f,val){
+  const v = val ?? (f.def? (typeof f.def==='function'?f.def():f.def) : "");
+  const req = f.req?'<span class="req">*</span>':'';
+  let input;
+  if(f.type==="select"){
+    input=`<select name="${f.k}">${(f.opt||[]).map(o=>`<option ${o==v?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  } else if(f.type==="textarea"){
+    input=`<textarea name="${f.k}">${esc(v)}</textarea>`;
+  } else if(f.type==="vendor"){
+    const opts=Store.list("vendors").map(x=>`<option ${x.name==v?'selected':''}>${esc(x.name)}</option>`).join('');
+    input=`<input name="${f.k}" list="dl_vendors" value="${esc(v)}" placeholder="거래처명"><datalist id="dl_vendors"><option value=""></option>${opts}</datalist>`;
+  } else if(f.type==="employee"){
+    const opts=Store.list("employees").map(x=>`<option ${x.name==v?'selected':''}>${esc(x.name)}</option>`).join('');
+    input=`<select name="${f.k}"><option value="">선택</option>${opts}</select>`;
+  } else {
+    const t=f.type==="number"?"number":f.type==="date"?"date":"text";
+    input=`<input type="${t}" name="${f.k}" value="${esc(v)}" ${f.type==='number'?'step="1"':''}>`;
+  }
+  return `<div class="fld ${f.full?'full':''}"><label>${esc(f.label)} ${req}</label>${input}</div>`;
+}
+
+function openForm(key,id){
+  const s=SCHEMA[key]; const item=id?Store.get(key,id):{};
+  openModal((id?"수정":"추가")+" · "+s.title,
+    `<form id="genForm" class="frm">${s.fields.map(f=>fieldInput(f,item[f.k])).join('')}</form>`,
+    `<button class="btn" onclick="closeModal()">취소</button>
+     <button class="btn primary" onclick="saveGen('${key}','${id||''}')">저장</button>`);
+}
+function saveGen(key,id){
+  const s=SCHEMA[key]; const fd=new FormData($('#genForm')); const obj=id?{id}:{};
+  for(const f of s.fields){ obj[f.k]=fd.get(f.k); }
+  for(const f of s.fields){ if(f.req && !String(obj[f.k]||"").trim()){ toast(f.label+"은(는) 필수입니다"); return; } }
+  Store.upsert(key,obj); closeModal(); toast("저장되었습니다"); drawRows(key);
+  // 명부 잔여연차 등 갱신 위해 관련 화면이면 재렌더
+  if(key==="leaves") { /* employees 화면 영향 */ }
+}
+function delItem(key,id){
+  const s=SCHEMA[key]; const it=Store.get(key,id);
+  if(!confirm(`삭제하시겠습니까?\n\n${(it&&(it.name||it.item||it.emp||it.desc))||''}`)) return;
+  Store.remove(key,id); toast("삭제되었습니다"); drawRows(key);
+}
+
+/* ============================================================
+   할 일 · 업무진도
+   ============================================================ */
+function renderTodos(){
+  setHeader("할 일 · 업무진도","매일 업무 체크 및 진행 현황",
+    `<button class="btn primary" onclick="openTodo()">+ 할 일 추가</button>`);
+  genState.todos=genState.todos||{f:"all"};
+  $('#view').innerHTML=`
+    <div class="panel"><div class="ph">
+      <div class="seg" id="todoSeg">
+        ${[["all","전체"],["today","오늘"],["week","이번주"],["late","지연"],["done","완료"]].map(([k,l])=>
+          `<button data-f="${k}" class="${genState.todos.f===k?'on':''}">${l}</button>`).join('')}
+      </div>
+      <div class="mini" id="todoCount"></div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>
+      <th style="width:34px"></th><th>업무</th><th>담당</th><th>마감</th><th>남은</th>
+      <th>우선</th><th style="width:130px">진도</th><th>상태</th><th style="width:96px"></th>
+    </tr></thead><tbody id="todoRows"></tbody></table></div></div>`;
+  $$('#todoSeg button').forEach(b=>b.onclick=()=>{genState.todos.f=b.dataset.f; renderTodos();});
+  drawTodos();
+}
+function drawTodos(){
+  let rows=Store.list("todos").slice();
+  const f=genState.todos.f;
+  rows.sort((a,b)=>{
+    if((a.status==="완료")!==(b.status==="완료")) return a.status==="완료"?1:-1;
+    return (a.due||"9").localeCompare(b.due||"9");
+  });
+  if(f==="today") rows=rows.filter(r=>r.due===todayStr()&&r.status!=="완료");
+  else if(f==="week"){ rows=rows.filter(r=>{const d=daysBetween(r.due); return d!==null&&d>=0&&d<=7&&r.status!=="완료";}); }
+  else if(f==="late") rows=rows.filter(r=>{const d=daysBetween(r.due); return d!==null&&d<0&&r.status!=="완료";});
+  else if(f==="done") rows=rows.filter(r=>r.status==="완료");
+  else rows=rows.filter(r=>r.status!=="완료" || true);
+  $('#todoCount').textContent=`${rows.length}건`;
+  const tb=$('#todoRows');
+  if(!rows.length){ tb.innerHTML=`<tr><td colspan="9"><div class="empty"><div class="big">✅</div>표시할 할 일이 없습니다.</div></td></tr>`; return; }
+  tb.innerHTML=rows.map(r=>{
+    const done=r.status==="완료";
+    const prog=Number(r.progress)||0;
+    return `<tr style="${done?'opacity:.55':''}">
+      <td><input type="checkbox" ${done?'checked':''} onchange="toggleTodo('${r.id}')"></td>
+      <td><b style="${done?'text-decoration:line-through':''}">${esc(r.title)}</b>${r.memo?`<div class="mini">${esc(r.memo)}</div>`:''}</td>
+      <td>${esc(r.owner)||'<span class="mini">-</span>'}</td>
+      <td>${esc(r.due)||'<span class="mini">-</span>'}</td>
+      <td>${r.due?ddayBadge(r.due):'<span class="mini">-</span>'}</td>
+      <td>${badgeFor(r.priority||"보통",{"높음":"r","보통":"b","낮음":"n"})}</td>
+      <td><div style="display:flex;align-items:center;gap:7px"><div class="prog"><i style="width:${prog}%"></i></div><span class="mini">${prog}%</span></div></td>
+      <td>${badgeFor(r.status||"대기",{"완료":"g","진행중":"o","보류":"n","대기":"b"})}</td>
+      <td><div class="rowbtns">
+        <button class="btn sm ghost" onclick="openTodo('${r.id}')">수정</button>
+        <button class="btn sm ghost" onclick="delTodo('${r.id}')">🗑</button>
+      </div></td></tr>`;
+  }).join('');
+}
+function toggleTodo(id){ const t=Store.get("todos",id); const done=t.status==="완료"; Store.upsert("todos",{id,status:done?"진행중":"완료",progress:done?(t.progress||50):100}); drawTodos(); renderMaybeDash(); }
+function delTodo(id){ if(!confirm("삭제하시겠습니까?")) return; Store.remove("todos",id); drawTodos(); }
+function openTodo(id){
+  const t=id?Store.get("todos",id):{};
+  openModal((id?"수정":"추가")+" · 할 일",`<form id="todoForm" class="frm">
+    <div class="fld full"><label>업무명 <span class="req">*</span></label><input name="title" value="${esc(t.title||'')}"></div>
+    <div class="fld"><label>담당</label><input name="owner" value="${esc(t.owner||'')}"></div>
+    <div class="fld"><label>마감일</label><input type="date" name="due" value="${esc(t.due||'')}"></div>
+    <div class="fld"><label>우선순위</label><select name="priority">${OPT.priority.map(o=>`<option ${o===(t.priority||'보통')?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="fld"><label>상태</label><select name="status">${OPT.todoStatus.map(o=>`<option ${o===(t.status||'대기')?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="fld"><label>진도(%)</label><input type="number" name="progress" min="0" max="100" value="${t.progress??0}"></div>
+    <div class="fld"><label>분류</label><input name="cat" value="${esc(t.cat||'')}" placeholder="예: 회계, 계약, 총무"></div>
+    <div class="fld full"><label>메모</label><textarea name="memo">${esc(t.memo||'')}</textarea></div>
+  </form>`,
+  `<button class="btn" onclick="closeModal()">취소</button><button class="btn primary" onclick="saveTodo('${id||''}')">저장</button>`);
+}
+function saveTodo(id){
+  const fd=new FormData($('#todoForm')); const o=id?{id}:{};
+  ["title","owner","due","priority","status","progress","cat","memo"].forEach(k=>o[k]=fd.get(k));
+  if(!o.title.trim()){ toast("업무명은 필수입니다"); return; }
+  if(o.status==="완료"&&(!o.progress||o.progress<100)) o.progress=100;
+  Store.upsert("todos",o); closeModal(); toast("저장되었습니다"); drawTodos();
+}
+function renderMaybeDash(){ if(Router.current==="dashboard") renderDashboard(); }
+
+/* ============================================================
+   거래내역 · 전표 (회계 핵심)
+   ============================================================ */
+function renderTxns(){
+  setHeader("거래내역 · 전표","통장/카드 내역, 세금계산서·영수증 증빙 관리",
+    `<button class="btn" onclick="importCSVPrompt()">CSV 가져오기</button>
+     <button class="btn" onclick="exportCSV('txns')">CSV 내보내기</button>
+     <button class="btn primary" onclick="openTxn()">+ 거래 입력</button>`);
+  genState.txns=genState.txns||{month:todayStr().slice(0,7),q:"",type:""};
+  $('#view').innerHTML=`
+    <div class="cards" id="txnCards"></div>
+    <div class="panel"><div class="ph">
+      <div class="filters">
+        <input type="month" id="txnMonth" value="${genState.txns.month}">
+        <select id="txnType"><option value="">전체</option><option>수입</option><option>지출</option></select>
+        <input type="search" id="txnQ" placeholder="적요·거래처 검색…">
+      </div>
+      <div class="tools"><span class="mini" id="txnCount"></span>
+        <button class="btn sm" onclick="showTxnAccount()">계정별 집계</button>
+        <button class="btn sm" onclick="printVoucherPick()">지출결의서 출력</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>
+      <th>일자</th><th>구분</th><th>계정과목</th><th>적요</th><th>거래처</th>
+      <th>결제수단</th><th>증빙</th><th class="num">공급가액</th><th class="num">부가세</th><th class="num">합계</th><th style="width:96px"></th>
+    </tr></thead><tbody id="txnRows"></tbody></table></div></div>`;
+  $('#txnMonth').onchange=e=>{genState.txns.month=e.target.value; drawTxns();};
+  $('#txnType').value=genState.txns.type; $('#txnType').onchange=e=>{genState.txns.type=e.target.value; drawTxns();};
+  $('#txnQ').oninput=e=>{genState.txns.q=e.target.value; drawTxns();};
+  drawTxns();
+}
+function txnFiltered(){
+  let rows=Store.list("txns").slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const st=genState.txns;
+  if(st.month) rows=rows.filter(r=>(r.date||"").startsWith(st.month));
+  if(st.type) rows=rows.filter(r=>r.type===st.type);
+  if(st.q){ const q=st.q.toLowerCase(); rows=rows.filter(r=>[r.desc,r.vendor,r.account].some(v=>String(v||"").toLowerCase().includes(q))); }
+  return rows;
+}
+function drawTxns(){
+  const rows=txnFiltered();
+  const inc=rows.filter(r=>r.type==="수입").reduce((s,r)=>s+txnTotal(r),0);
+  const exp=rows.filter(r=>r.type==="지출").reduce((s,r)=>s+txnTotal(r),0);
+  const vat=rows.reduce((s,r)=>s+(Number(r.vat)||0),0);
+  $('#txnCards').innerHTML=`
+    ${card("이번달 수입",won(inc)+"<small> 원</small>","g")}
+    ${card("이번달 지출",won(exp)+"<small> 원</small>","r")}
+    ${card("수지 차액",won(inc-exp)+"<small> 원</small>",inc-exp>=0?"b":"o")}
+    ${card("부가세 합계",won(vat)+"<small> 원</small>","n")}`;
+  $('#txnCount').textContent=`${rows.length}건`;
+  const tb=$('#txnRows');
+  if(!rows.length){ tb.innerHTML=`<tr><td colspan="11"><div class="empty"><div class="big">💳</div>해당 월 거래내역이 없습니다.</div></td></tr>`; return; }
+  tb.innerHTML=rows.map(r=>`<tr>
+    <td>${esc(r.date)}</td>
+    <td>${badgeFor(r.type,{"수입":"g","지출":"r"})}</td>
+    <td>${esc(r.account)||'<span class="mini">-</span>'}</td>
+    <td>${esc(r.desc)}</td>
+    <td>${esc(r.vendor)||'<span class="mini">-</span>'}</td>
+    <td class="mini">${esc(r.pay)||'-'}</td>
+    <td>${r.evidence&&r.evidence!=="없음"?badgeFor(r.evidence,{"세금계산서":"b","계산서":"b","카드전표":"o","현금영수증":"g","간이영수증":"n","이체증":"n"}):'<span class="mini">-</span>'}</td>
+    <td class="num">${won(r.supply)}</td>
+    <td class="num">${won(r.vat)}</td>
+    <td class="num"><b>${won(txnTotal(r))}</b></td>
+    <td><div class="rowbtns">
+      <button class="btn sm ghost" onclick="openTxn('${r.id}')">수정</button>
+      <button class="btn sm ghost" onclick="delTxn('${r.id}')">🗑</button>
+    </div></td></tr>`).join('');
+}
+function txnTotal(r){ return (Number(r.supply)||0)+(Number(r.vat)||0); }
+function card(k,v,c="n",sub=""){ return `<div class="card"><div class="k">${k}</div><div class="v" style="color:var(--${c==='r'?'danger':c==='g'?'brand':c==='o'?'warn':c==='b'?'blue':'ink'})">${v}</div>${sub?`<div class="sub">${sub}</div>`:''}</div>`; }
+function delTxn(id){ if(!confirm("삭제하시겠습니까?")) return; Store.remove("txns",id); drawTxns(); }
+function openTxn(id){
+  const t=id?Store.get("txns",id):{};
+  const vopts=Store.list("vendors").map(x=>`<option>${esc(x.name)}</option>`).join('');
+  openModal((id?"수정":"입력")+" · 거래 전표",`<form id="txnForm" class="frm">
+    <div class="fld"><label>일자 <span class="req">*</span></label><input type="date" name="date" value="${esc(t.date||todayStr())}"></div>
+    <div class="fld"><label>구분 <span class="req">*</span></label><select name="type">${OPT.txnType.map(o=>`<option ${o===(t.type||'지출')?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="fld"><label>계정과목</label><input name="account" list="dl_acc" value="${esc(t.account||'')}"><datalist id="dl_acc">${OPT.account.map(o=>`<option value="${o}">`).join('')}</datalist></div>
+    <div class="fld"><label>거래처</label><input name="vendor" list="dl_v2" value="${esc(t.vendor||'')}"><datalist id="dl_v2">${vopts}</datalist></div>
+    <div class="fld full"><label>적요(내용) <span class="req">*</span></label><input name="desc" value="${esc(t.desc||'')}"></div>
+    <div class="fld"><label>결제수단</label><select name="pay">${OPT.payMethod.map(o=>`<option ${o===(t.pay||'법인통장')?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="fld"><label>증빙</label><select name="evidence">${OPT.evidence.map(o=>`<option ${o===(t.evidence||'세금계산서')?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="fld"><label>공급가액(원)</label><input type="number" name="supply" value="${t.supply??''}" oninput="autoVat()"></div>
+    <div class="fld"><label>부가세(원) <span class="hint">10% 자동</span></label><input type="number" name="vat" id="vatField" value="${t.vat??''}"></div>
+    <div class="fld"><label>연결 사업(예산)</label><input name="project" value="${esc(t.project||'')}" placeholder="예산 집행 연결용"></div>
+    <div class="fld"><label>비고</label><input name="memo" value="${esc(t.memo||'')}"></div>
+  </form>`,
+  `<button class="btn" onclick="closeModal()">취소</button><button class="btn primary" onclick="saveTxn('${id||''}')">저장</button>`);
+}
+function autoVat(){ const f=$('#txnForm'); const s=Number(f.supply.value)||0; if(document.activeElement.name==='supply'){ $('#vatField').value=Math.round(s*0.1); } }
+function saveTxn(id){
+  const fd=new FormData($('#txnForm')); const o=id?{id}:{};
+  ["date","type","account","vendor","desc","pay","evidence","supply","vat","project","memo"].forEach(k=>o[k]=fd.get(k));
+  if(!o.date||!o.desc.trim()){ toast("일자와 적요는 필수입니다"); return; }
+  Store.upsert("txns",o); closeModal(); toast("저장되었습니다"); drawTxns();
+}
+function printVoucherPick(){
+  const rows=txnFiltered().filter(r=>r.type==="지출");
+  if(!rows.length){ toast("해당 월 지출 내역이 없습니다"); return; }
+  openModal("지출결의서로 출력할 지출 선택",
+    `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>일자</th><th>적요</th><th>거래처</th><th class="num">금액</th><th></th></tr></thead><tbody>
+      ${rows.map(r=>`<tr><td>${esc(r.date)}</td><td>${esc(r.desc)}</td><td>${esc(r.vendor)||'-'}</td><td class="num">${won(txnTotal(r))}</td>
+        <td><button class="btn sm primary" onclick="makeVoucher('${r.id}')">선택</button></td></tr>`).join('')}
+    </tbody></table></div>`,
+    `<button class="btn" onclick="closeModal()">닫기</button>`, true);
+}
+function makeVoucher(id){
+  const r=Store.get("txns",id); if(!r) return;
+  closeModal();
+  genState.docgen={type:"voucher"};
+  Router.go("docgen");
+  // 선택 거래로 문서모델 채우기
+  docModel.title=r.desc; docModel.to=r.vendor||""; docModel.date=r.date||todayStr();
+  docModel.items=[{name:r.desc+(r.account?` (${r.account})`:""),qty:1,price:txnTotal(r)}];
+  buildDocForm(); // 폼 재구성
+  // buildDocForm 이 docModel 을 초기화하므로 다시 세팅 후 프리뷰
+  docModel.title=r.desc; docModel.to=r.vendor||""; docModel.date=r.date||todayStr();
+  docModel.items=[{name:r.desc+(r.account?` (${r.account})`:""),qty:1,price:txnTotal(r)}];
+  if(document.querySelector('#itemRows')) drawItemRows();
+  renderDocPreview();
+  toast("지출결의서 미리보기를 생성했습니다");
+}
+function showTxnAccount(){
+  const rows=txnFiltered(); const map={};
+  rows.forEach(r=>{ const key=(r.type)+" · "+(r.account||"미분류"); map[key]=(map[key]||0)+txnTotal(r); });
+  const ent=Object.entries(map).sort((a,b)=>b[1]-a[1]);
+  openModal(`계정별 집계 (${genState.txns.month||'전체'})`,
+    ent.length? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>구분·계정과목</th><th class="num">금액</th></tr></thead><tbody>
+      ${ent.map(([k,v])=>`<tr><td>${esc(k)}</td><td class="num"><b>${won(v)}</b></td></tr>`).join('')}
+    </tbody></table></div>`:'<div class="empty">데이터가 없습니다.</div>',
+    `<button class="btn" onclick="closeModal()">닫기</button>`);
+}
+
+/* ============================================================
+   사업예산 집행 관리
+   ============================================================ */
+function renderBudgets(){
+  setHeader("사업예산 집행 관리","사업/항목별 예산 대비 집행 현황 (거래내역 자동 연동)",
+    `<button class="btn" onclick="exportCSV('budgets')">CSV 내보내기</button>
+     <button class="btn primary" onclick="openBudget()">+ 예산 항목 추가</button>`);
+  $('#view').innerHTML=`<div class="cards" id="budCards"></div>
+    <div class="panel"><div class="ph"><h3>예산 항목</h3><span class="mini" id="budCount"></span></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>
+      <th>사업명</th><th>항목</th><th class="num">예산액</th><th class="num">집행액</th><th class="num">잔액</th><th style="width:170px">집행률</th><th style="width:96px"></th>
+    </tr></thead><tbody id="budRows"></tbody></table></div></div>
+    <p class="mini" style="margin-left:2px">※ 집행액은 거래내역의 ‘연결 사업’ 값이 예산의 ‘사업명’과 일치하는 지출 합계로 자동 계산됩니다.</p>`;
+  drawBudgets();
+}
+function budgetSpent(name){ return Store.list("txns").filter(t=>t.type==="지출"&&(t.project||"")===name).reduce((s,t)=>s+txnTotal(t),0); }
+function drawBudgets(){
+  const rows=Store.list("budgets").slice();
+  const totalB=rows.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const totalS=rows.reduce((s,r)=>s+budgetSpent(r.project),0);
+  $('#budCards').innerHTML=`
+    ${card("총 예산",won(totalB)+"<small> 원</small>","b")}
+    ${card("총 집행",won(totalS)+"<small> 원</small>","o")}
+    ${card("잔여 예산",won(totalB-totalS)+"<small> 원</small>","g")}
+    ${card("전체 집행률",(totalB?Math.round(totalS/totalB*100):0)+"<small> %</small>","n")}`;
+  $('#budCount').textContent=`${rows.length}건`;
+  const tb=$('#budRows');
+  if(!rows.length){ tb.innerHTML=`<tr><td colspan="7"><div class="empty"><div class="big">📈</div>예산 항목을 추가하세요.</div></td></tr>`; return; }
+  tb.innerHTML=rows.map(r=>{
+    const spent=budgetSpent(r.project); const amt=Number(r.amount)||0;
+    const pct=amt?Math.round(spent/amt*100):0;
+    const col=pct>100?'var(--danger)':pct>85?'var(--warn)':'var(--brand)';
+    return `<tr>
+      <td><b>${esc(r.project)}</b></td><td>${esc(r.item)||'<span class="mini">-</span>'}</td>
+      <td class="num">${won(amt)}</td><td class="num">${won(spent)}</td>
+      <td class="num" style="color:${amt-spent<0?'var(--danger)':''}">${won(amt-spent)}</td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="prog"><i style="width:${Math.min(100,pct)}%;background:${col}"></i></div><span class="mini" style="color:${col};font-weight:700">${pct}%</span></div></td>
+      <td><div class="rowbtns">
+        <button class="btn sm ghost" onclick="openBudget('${r.id}')">수정</button>
+        <button class="btn sm ghost" onclick="(function(){if(confirm('삭제?')){Store.remove('budgets','${r.id}');drawBudgets();}})()">🗑</button>
+      </div></td></tr>`;
+  }).join('');
+}
+function openBudget(id){
+  const b=id?Store.get("budgets",id):{};
+  openModal((id?"수정":"추가")+" · 예산 항목",`<form id="budForm" class="frm">
+    <div class="fld"><label>사업명 <span class="req">*</span></label><input name="project" value="${esc(b.project||'')}"></div>
+    <div class="fld"><label>세부 항목</label><input name="item" value="${esc(b.item||'')}"></div>
+    <div class="fld"><label>예산액(원) <span class="req">*</span></label><input type="number" name="amount" value="${b.amount??''}"></div>
+    <div class="fld"><label>회계연도</label><input name="year" value="${esc(b.year||new Date().getFullYear())}"></div>
+    <div class="fld full"><label>비고</label><textarea name="memo">${esc(b.memo||'')}</textarea></div>
+  </form>`,
+  `<button class="btn" onclick="closeModal()">취소</button><button class="btn primary" onclick="saveBudget('${id||''}')">저장</button>`);
+}
+function saveBudget(id){
+  const fd=new FormData($('#budForm')); const o=id?{id}:{};
+  ["project","item","amount","year","memo"].forEach(k=>o[k]=fd.get(k));
+  if(!o.project.trim()||!o.amount){ toast("사업명과 예산액은 필수입니다"); return; }
+  Store.upsert("budgets",o); closeModal(); toast("저장되었습니다"); drawBudgets();
+}
+
+/* ============================================================
+   문서 생성 (거래명세서·지출결의서·견적서·착수계·공문)
+   ============================================================ */
+const DOC_TYPES={
+  estimate:{label:"견적서",title:"견 적 서"},
+  statement:{label:"거래명세서",title:"거 래 명 세 서"},
+  voucher:{label:"지출결의서",title:"지 출 결 의 서"},
+  start:{label:"착수계",title:"착 수 계"},
+  official:{label:"공문",title:"공    문"}
+};
+function renderDocGen(){
+  setHeader("문서 생성","견적서·거래명세서·지출결의서·착수계·공문 작성 및 인쇄",
+    ``);
+  genState.docgen=genState.docgen||{type:"statement"};
+  $('#view').innerHTML=`
+    <div class="panel pb pad">
+      <div class="filters" style="margin-bottom:4px">
+        <label style="font-weight:700">문서 종류</label>
+        <select id="docType">${Object.entries(DOC_TYPES).map(([k,v])=>`<option value="${k}" ${genState.docgen.type===k?'selected':''}>${v.label}</option>`).join('')}</select>
+        <span class="mini">항목을 입력하면 오른쪽 미리보기가 갱신됩니다.</span>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="panel pb pad"><h3 style="margin-top:0">입력</h3><div id="docForm"></div></div>
+      <div class="panel pb pad">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <h3 style="margin:0">미리보기</h3>
+          <button class="btn primary sm no-print" onclick="window.print()">🖨️ 인쇄 / PDF 저장</button>
+        </div>
+        <div id="docPreview"></div>
+      </div>
+    </div>`;
+  $('#docType').onchange=e=>{genState.docgen.type=e.target.value; buildDocForm();};
+  buildDocForm();
+}
+let docModel={};
+function buildDocForm(){
+  const type=genState.docgen.type;
+  docModel={
+    company:docModel.company||"㈜창체넷", date:todayStr(),
+    to:"", title:"", items:docModel.items&&docModel.items.length?docModel.items:[{name:"",qty:1,price:0}],
+    note:"", from:"", receiver:"", sender:"", docno:""
+  };
+  const commonHead=`
+    <div class="frm">
+      <div class="fld"><label>작성일</label><input type="date" oninput="docSet('date',this.value)" value="${docModel.date}"></div>
+      <div class="fld"><label>문서번호</label><input oninput="docSet('docno',this.value)" placeholder="예: 창체-2026-001"></div>
+      <div class="fld"><label>${type==='official'?'수신':'받는 곳(거래처)'}</label><input list="dl_v3" oninput="docSet('to',this.value)" placeholder="상대방/기관명"><datalist id="dl_v3">${Store.list("vendors").map(v=>`<option>${esc(v.name)}</option>`).join('')}</datalist></div>
+      <div class="fld"><label>발신/작성 회사</label><input oninput="docSet('company',this.value)" value="${esc(docModel.company)}"></div>
+      <div class="fld full"><label>제목/건명</label><input oninput="docSet('title',this.value)" placeholder="문서 제목"></div>
+    </div>`;
+  let extra="";
+  if(type==="official"){
+    extra=`<div class="sec-title">본문</div>
+      <textarea class="no-print" style="width:100%;min-height:160px;border:1px solid var(--line);border-radius:8px;padding:10px" oninput="docSet('body',this.value)" placeholder="공문 본문을 입력하세요."></textarea>`;
+  } else if(type==="start"){
+    extra=`<div class="frm"><div class="fld full"><label>사업/계약명</label><input oninput="docSet('project',this.value)"></div>
+      <div class="fld"><label>계약금액(원)</label><input type="number" oninput="docSet('camount',this.value)"></div>
+      <div class="fld"><label>착수일</label><input type="date" oninput="docSet('sdate',this.value)" value="${todayStr()}"></div>
+      <div class="fld full"><label>착수 내용</label><textarea oninput="docSet('body',this.value)" placeholder="상기 계약에 대하여 아래와 같이 착수하였음을 신고합니다."></textarea></div></div>`;
+  } else {
+    extra=`<div class="sec-title">품목</div><div id="itemRows"></div>
+      <button class="btn sm no-print" style="margin-top:8px" onclick="docAddItem()">+ 품목 추가</button>
+      <div class="frm" style="margin-top:12px"><div class="fld full"><label>비고</label><input oninput="docSet('note',this.value)"></div></div>`;
+  }
+  $('#docForm').innerHTML=commonHead+extra;
+  if(!["official","start"].includes(type)) drawItemRows();
+  renderDocPreview();
+}
+function docSet(k,v){ docModel[k]=v; renderDocPreview(); }
+function docAddItem(){ docModel.items.push({name:"",qty:1,price:0}); drawItemRows(); renderDocPreview(); }
+function docDelItem(i){ docModel.items.splice(i,1); if(!docModel.items.length)docModel.items.push({name:"",qty:1,price:0}); drawItemRows(); renderDocPreview(); }
+function docItemSet(i,k,v){ docModel.items[i][k]=k==='name'?v:(Number(v)||0); renderDocPreview(); }
+function drawItemRows(){
+  $('#itemRows').innerHTML=docModel.items.map((it,i)=>`
+    <div style="display:grid;grid-template-columns:1fr 70px 110px 30px;gap:6px;margin-bottom:6px">
+      <input placeholder="품목명" value="${esc(it.name)}" oninput="docItemSet(${i},'name',this.value)">
+      <input type="number" placeholder="수량" value="${it.qty}" oninput="docItemSet(${i},'qty',this.value)">
+      <input type="number" placeholder="단가" value="${it.price}" oninput="docItemSet(${i},'price',this.value)">
+      <button class="btn sm ghost" onclick="docDelItem(${i})">✕</button>
+    </div>`).join('');
+}
+function renderDocPreview(){
+  const type=genState.docgen.type; const d=docModel; const T=DOC_TYPES[type];
+  let body="";
+  const head=`<div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:8px">
+      <div>${d.docno?'문서번호: '+esc(d.docno):''}</div><div>작성일: ${esc(d.date)}</div></div>`;
+  if(["estimate","statement"].includes(type)){
+    const total=d.items.reduce((s,it)=>s+(it.qty*it.price),0); const vat=Math.round(total*0.1);
+    body=`${head}
+      <table><tr><th>${type==='estimate'?'수신':'공급받는자'}</th><td>${esc(d.to)||'&nbsp;'}</td><th>공급자</th><td>${esc(d.company)}</td></tr>
+      <tr><th>건명</th><td colspan="3">${esc(d.title)||'&nbsp;'}</td></tr></table>
+      <table style="margin-top:10px"><thead><tr><th style="width:40px">No</th><th style="width:auto">품목</th><th style="width:70px">수량</th><th style="width:100px">단가</th><th style="width:110px">금액</th></tr></thead><tbody>
+      ${d.items.map((it,i)=>`<tr><td class="center">${i+1}</td><td>${esc(it.name)||'&nbsp;'}</td><td class="right">${won(it.qty)}</td><td class="right">${won(it.price)}</td><td class="right">${won(it.qty*it.price)}</td></tr>`).join('')}
+      <tr><td colspan="4" class="right"><b>공급가액</b></td><td class="right">${won(total)}</td></tr>
+      <tr><td colspan="4" class="right"><b>부가세(10%)</b></td><td class="right">${won(vat)}</td></tr>
+      <tr><td colspan="4" class="right"><b>합계금액</b></td><td class="right"><b>${won(total+vat)}</b></td></tr>
+      </tbody></table>
+      ${d.note?`<p style="margin-top:10px">비고: ${esc(d.note)}</p>`:''}`;
+  } else if(type==="voucher"){
+    body=`${head}<table><tr><th>건명</th><td colspan="3">${esc(d.title)||'&nbsp;'}</td></tr>
+      <tr><th>지급처</th><td>${esc(d.to)||'&nbsp;'}</td><th>작성</th><td>${esc(d.company)}</td></tr></table>
+      <table style="margin-top:10px"><thead><tr><th>적요</th><th style="width:130px">금액</th></tr></thead><tbody>
+      ${d.items.map(it=>`<tr><td>${esc(it.name)||'&nbsp;'}</td><td class="right">${won(it.qty*it.price||it.price)}</td></tr>`).join('')}
+      <tr><td class="right"><b>합계</b></td><td class="right"><b>${won(d.items.reduce((s,it)=>s+(it.qty*it.price||it.price),0))}</b></td></tr>
+      </tbody></table>
+      <div class="sign">위 금액을 지출하고자 결의합니다.<br>${esc(d.date)}<br><br>담당 &nbsp;(인) &nbsp;&nbsp; 검토 &nbsp;(인) &nbsp;&nbsp; 승인 &nbsp;(인)</div>`;
+  } else if(type==="start"){
+    body=`${head}<table><tr><th>사업/계약명</th><td colspan="3">${esc(d.project||d.title)||'&nbsp;'}</td></tr>
+      <tr><th>계약금액</th><td>${won(d.camount)} 원</td><th>착수일</th><td>${esc(d.sdate||d.date)}</td></tr>
+      <tr><th>수신</th><td colspan="3">${esc(d.to)||'&nbsp;'}</td></tr></table>
+      <p style="margin-top:16px;line-height:1.9">${esc(d.body)||'상기 사업(계약)에 대하여 위와 같이 착수하였음을 신고합니다.'}</p>
+      <div class="sign">${esc(d.date)}<br><br>${esc(d.company)} &nbsp;(인)</div>`;
+  } else { // official
+    body=`${head}<table><tr><th>수신</th><td>${esc(d.to)||'&nbsp;'}</td></tr>
+      <tr><th>발신</th><td>${esc(d.company)}</td></tr>
+      <tr><th>제목</th><td>${esc(d.title)||'&nbsp;'}</td></tr></table>
+      <p style="margin-top:16px;line-height:1.9;white-space:pre-wrap">${esc(d.body)||''}</p>
+      <div class="sign">${esc(d.date)}<br><br><b style="font-size:16px">${esc(d.company)}</b> &nbsp;(직인)</div>`;
+  }
+  $('#docPreview').innerHTML=`<div class="doc-preview"><h1>${T.title}</h1>${body}</div>`;
+}
+
+/* ============================================================
+   대시보드
+   ============================================================ */
+function renderDashboard(){
+  setHeader("대시보드", todayStr()+" · 오늘의 업무 현황","");
+  const todos=Store.list("todos");
+  const openTodos=todos.filter(t=>t.status!=="완료");
+  const todayTodos=openTodos.filter(t=>t.due===todayStr());
+  const lateTodos=openTodos.filter(t=>{const d=daysBetween(t.due); return d!==null&&d<0;});
+  const month=todayStr().slice(0,7);
+  const mtx=Store.list("txns").filter(t=>(t.date||"").startsWith(month));
+  const inc=mtx.filter(t=>t.type==="수입").reduce((s,t)=>s+txnTotal(t),0);
+  const exp=mtx.filter(t=>t.type==="지출").reduce((s,t)=>s+txnTotal(t),0);
+
+  // 임박 알림: 인증 갱신 + 계약 종료
+  const alerts=[];
+  Store.list("docs").forEach(d=>{ const dd=daysBetween(d.expire); if(dd!==null&&dd<=45) alerts.push({t:"인증/문서 갱신",name:d.name,date:d.expire,dd}); });
+  Store.list("contracts").forEach(c=>{ const dd=daysBetween(c.end); if(dd!==null&&dd<=45&&c.status!=="완료"&&c.status!=="해지") alerts.push({t:"계약 종료",name:c.name,date:c.end,dd}); });
+  alerts.sort((a,b)=>a.dd-b.dd);
+
+  const budgets=Store.list("budgets");
+  const totalB=budgets.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const totalS=budgets.reduce((s,r)=>s+budgetSpent(r.project),0);
+
+  $('#view').innerHTML=`
+    <div class="cards">
+      ${card("오늘 할 일",todayTodos.length+"<small> 건</small>",todayTodos.length?"b":"n","미완료 전체 "+openTodos.length+"건")}
+      ${card("지연 업무",lateTodos.length+"<small> 건</small>",lateTodos.length?"r":"g",lateTodos.length?"마감 초과":"지연 없음")}
+      ${card("이번달 지출",won(exp)+"<small> 원</small>","o","수입 "+won(inc)+"원")}
+      ${card("예산 집행률",(totalB?Math.round(totalS/totalB*100):0)+"<small> %</small>","g","집행 "+won(totalS)+"원")}
+    </div>
+    <div class="two-col">
+      <div class="panel"><div class="ph"><h3>🔔 임박 알림 (45일 이내)</h3><button class="btn sm no-print" onclick="Router.go('docs')">문서관리</button></div>
+        <div class="tbl-wrap"><table class="tbl"><tbody id="dashAlerts"></tbody></table></div></div>
+      <div class="panel"><div class="ph"><h3>✅ 오늘·지연 할 일</h3><button class="btn sm no-print" onclick="Router.go('todos')">전체보기</button></div>
+        <div class="tbl-wrap"><table class="tbl"><tbody id="dashTodos"></tbody></table></div></div>
+    </div>`;
+
+  const at=$('#dashAlerts');
+  at.innerHTML = alerts.length? alerts.map(a=>`<tr>
+    <td style="width:30px">${a.t.includes('계약')?'📝':'📑'}</td>
+    <td><b>${esc(a.name)}</b><div class="mini">${a.t} · ${esc(a.date)}</div></td>
+    <td class="num">${ddayBadge(a.date)}</td></tr>`).join('')
+    : `<tr><td><div class="empty" style="padding:26px">45일 이내 갱신/만료 예정 항목이 없습니다.</div></td></tr>`;
+
+  const dt=$('#dashTodos');
+  const show=[...lateTodos,...todayTodos,...openTodos].filter((v,i,a)=>a.indexOf(v)===i).slice(0,8);
+  dt.innerHTML = show.length? show.map(t=>`<tr>
+    <td style="width:24px"><input type="checkbox" onchange="toggleTodo('${t.id}')"></td>
+    <td><b>${esc(t.title)}</b>${t.owner?`<span class="mini"> · ${esc(t.owner)}</span>`:''}</td>
+    <td class="num">${t.due?ddayBadge(t.due):'<span class="mini">-</span>'}</td></tr>`).join('')
+    : `<tr><td><div class="empty" style="padding:26px">할 일이 없습니다. 🎉</div></td></tr>`;
+}
+
+/* ============================================================
+   모달
+   ============================================================ */
+function openModal(title,body,footer,wide){
+  const m=$('#modal'); m.className="modal"+(wide?" wide":"");
+  m.innerHTML=`<div class="mh"><h3>${esc(title)}</h3><button class="close" onclick="closeModal()">×</button></div>
+    <div class="mb">${body}</div><div class="mf">${footer||''}</div>`;
+  $('#mask').classList.add('on');
+}
+function closeModal(){ $('#mask').classList.remove('on'); }
+$('#mask').addEventListener('click',e=>{ if(e.target.id==='mask') closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ============================================================
+   CSV / 백업
+   ============================================================ */
+function toCSV(rows,fields){
+  const head=fields.join(',');
+  const body=rows.map(r=>fields.map(f=>{
+    let v=r[f]==null?"":String(r[f]); if(/[",\n]/.test(v)) v='"'+v.replace(/"/g,'""')+'"'; return v;
+  }).join(',')).join('\n');
+  return "﻿"+head+"\n"+body; // BOM for Excel 한글
+}
+function download(name,content,type="text/csv;charset=utf-8"){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click(); URL.revokeObjectURL(a.href);
+}
+function exportCSV(key){
+  const rows=Store.list(key); if(!rows.length){ toast("내보낼 데이터가 없습니다"); return; }
+  const fields=[...new Set(rows.flatMap(r=>Object.keys(r)))].filter(k=>!k.startsWith('_'));
+  download(`${key}_${todayStr()}.csv`, toCSV(rows,fields));
+  toast("CSV로 내보냈습니다");
+}
+let _importTarget=null;
+function importCSVPrompt(){ _importTarget="txns"; $('#fileInput').accept=".csv"; $('#fileInput').click(); }
+function parseCSV(text){
+  text=text.replace(/^﻿/,''); const rows=[]; let i=0,f="",row=[],q=false;
+  while(i<text.length){ const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else { if(c==='"') q=true; else if(c===','){row.push(f);f="";} else if(c==='\n'){row.push(f);rows.push(row);row=[];f="";} else if(c!=='\r') f+=c; }
+    i++;
+  }
+  if(f.length||row.length){ row.push(f); rows.push(row); }
+  return rows;
+}
+$('#fileInput').addEventListener('change',e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      if(file.name.endsWith('.json')){ Backup.applyJSON(rd.result); }
+      else { importTxnCSV(rd.result); }
+    }catch(err){ alert("가져오기 실패: "+err.message); }
+    e.target.value="";
+  };
+  rd.readAsText(file,'utf-8');
+});
+function importTxnCSV(text){
+  const rows=parseCSV(text).filter(r=>r.some(c=>c.trim()!==""));
+  if(rows.length<2){ toast("데이터가 없습니다"); return; }
+  const head=rows[0].map(h=>h.trim());
+  // 헤더 매핑 (은행/카드 내역 유연 대응)
+  const find=(...names)=>head.findIndex(h=>names.some(n=>h.replace(/\s/g,'').includes(n)));
+  const ci={ date:find("일자","날짜","거래일","승인일"), desc:find("적요","내용","가맹점","적 요","비고","상호"),
+             draw:find("출금","지출","사용금액","결제금액","출금액"), dep:find("입금","입금액","수입"),
+             amt:find("금액"), account:find("계정","과목"), vendor:find("거래처") };
+  let n=0;
+  rows.slice(1).forEach(r=>{
+    const cell=idx=>idx>=0?(r[idx]||"").trim():"";
+    const num=s=>Number(String(s).replace(/[^0-9.-]/g,""))||0;
+    const draw=num(cell(ci.draw)), dep=num(cell(ci.dep)), amt=num(cell(ci.amt));
+    let type,total;
+    if(dep>0){type="수입";total=dep;} else if(draw>0){type="지출";total=draw;}
+    else if(amt!==0){ type=amt<0?"지출":"수입"; total=Math.abs(amt);} else return;
+    const date=cell(ci.date).replace(/[.\/]/g,'-').slice(0,10) || todayStr();
+    Store.upsert("txns",{ date, type, desc:cell(ci.desc)||"(가져온 내역)", vendor:cell(ci.vendor),
+      account:cell(ci.account), pay:"법인통장", evidence:"없음", supply:total, vat:0 });
+    n++;
+  });
+  toast(`${n}건을 가져왔습니다`); if(Router.current==="txns") drawTxns();
+}
+const Backup={
+  export(){ download(`경리업무_백업_${todayStr()}.json`, JSON.stringify(Store.data,null,2), "application/json"); toast("전체 백업을 저장했습니다"); },
+  importPrompt(){ _importTarget="json"; $('#fileInput').accept=".json"; $('#fileInput').click(); },
+  applyJSON(text){ if(!confirm("현재 데이터를 백업 파일 내용으로 덮어씁니다. 계속할까요?")) return;
+    const obj=JSON.parse(text); Store.data=obj; Store.save(); toast("복원되었습니다"); Router.go(Router.current); }
+};
+
+/* ============================================================
+   시작
+   ============================================================ */
+function init(){
+  Store.load();
+  buildNav();
+  const start=location.hash.slice(1)||"dashboard";
+  Router.go(start);
+}
+init();
+</script>
+</body>
+</html>
