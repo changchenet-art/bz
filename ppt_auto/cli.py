@@ -26,6 +26,7 @@ from . import __version__
 from .notes import generate as generate_notes
 from .parse import excel as p_excel
 from .parse import freetext as p_freetext
+from .parse import html_doc as p_html
 from .parse import issue as p_issue
 from .render import canva as r_canva
 from .render import pdf_notes as r_pdf
@@ -43,6 +44,8 @@ def _load_deck(args) -> Deck:
         ext = os.path.splitext(args.input)[1].lower()
         if ext in (".xlsx", ".xlsm"):
             deck = p_excel.parse_file(args.input)
+        elif ext in (".html", ".htm"):
+            deck = p_html.parse_file(args.input, skin=args.skin or "white_blue_minimal")
         else:
             deck = p_freetext.parse_file(args.input)
     else:
