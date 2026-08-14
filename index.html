@@ -178,6 +178,7 @@
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="foot">
+      <button onclick="loadSeed()">🏢 ㈜창체넷 기초자료</button>
       <button onclick="Backup.export()">⬇ 전체 백업 (JSON)</button>
       <button onclick="Backup.importPrompt()">⬆ 백업 복원</button>
     </div>
@@ -238,7 +239,7 @@ const Store = {
     try{ this.data = JSON.parse(localStorage.getItem(DB_KEY)) || {}; }
     catch(e){ this.data = {}; }
     // 컬렉션 초기화
-    ["todos","vendors","orders","contacts","docs","contracts","employees","leaves","budgets","txns"].forEach(k=>{ if(!this.data[k]) this.data[k]=[]; });
+    ["todos","vendors","orders","contacts","docs","contracts","employees","leaves","budgets","txns","payments"].forEach(k=>{ if(!this.data[k]) this.data[k]=[]; });
     if(!this.data._meta) this.data._meta={created:todayStr()};
   },
   save(){ localStorage.setItem(DB_KEY, JSON.stringify(this.data)); },
@@ -265,8 +266,40 @@ const OPT = {
   txnType:["수입","지출"],
   payMethod:["법인통장","개인통장","법인카드","개인카드","현금","계좌이체"],
   evidence:["세금계산서","계산서","카드전표","현금영수증","간이영수증","이체증","없음"],
-  account:["매출","용역수입","급여","4대보험","임차료","수도광열비","통신비","소모품비","지급수수료","교육훈련비","여비교통비","접대비","광고선전비","세금과공과","외주비","강사료","자문료","기타"]
+  account:["매출","용역수입","급여","4대보험","임차료","수도광열비","통신비","소모품비","지급수수료","교육훈련비","여비교통비","접대비","광고선전비","세금과공과","외주비","강사료","자문료","기타"],
+  // ㈜창체넷 금전출납 계정과목 체계
+  ledgerAccount:["111. 학교","112.정부.지자체,교육청","113.기관","114.기업","115. 기타","121. 교구 (완제품)","122. 교재 (출판인쇄)","123. 재료 (커피점토외)","124. 기타","131. 개발 지원금","132. 인건비 (사회적기업) 보조금","133. 위탁운영 보조금","134. 기타","141. SW개발 제작","142. 디자인,외 지식 콘텐츠 제작","143. 학술 연구개발","211. 경영 마케팅 자문비","212. 전문자문비","213.  강사비","221. 위탁 기술개발비","222. 시제품, 견본 제작비","223. 원재료구입비","224. 역량강화비","225. 연구활동비","226. 연구원 인건비","227. 임차비","228.기술자문비","229. IP확보","231. 식비,간식비","232. 의복비","233. 여가 및 의료비","241. 광고 출력비","242. 홍보 마케팅 관리비","243. 홍보물 구입","251. 도서 인쇄비","252. 비품구입","253. 교육훈련비","254. 소모품비","255. 접대비","256. 여비 및 교통비","257. 운반, 포장비","258. 임차경비","259. 재료비","260. 소프트웨어 구입 및 임차","261. 회의비","262. 위탁의뢰비","271. 차량 유지비","272. 차량 구입, 임차","311. 급여","312. 퇴직 적립금","313. 사회보험부담금","314. 일용근로비","315. 제수당","316. 상여금","321. 임차료","322. 수도광열비","323.  수선비","324. 통신비","325. 기타","411. 이자수입","412. 잡이익","413. 이월금","414. 기타  수익","511. 지급수수료","512. 기부금","513. 잡손실","514. 지급이자","516. 감가상각비","517. 기타 지출","611. 법인세 및 지방세","612. 보험료","613. 공공요금","721. 선입금","722. 가지급금","723. 대출금","731. 차입금 (대차용금)","732. 차출금 (대차용금)","741. 예정수익","742. 예정지출","743. 보통예금","744. 가수금"],
+  incomeType:["기타소득(8.8%)","사업소득(3.3%)"]
 };
+
+/* ---------- ㈜창체넷 기초자료 (잔고·주민번호·급여 등 민감정보 제외) ---------- */
+const SEED={
+  vendors:[], // 계좌는 결제수단 자유입력으로 사용
+  accounts:["농협대출(6801)","농협(6771)","농협입출금(3253)","농협직원법인(5833)","생물자원관(5863)","농협(0493)","신한입출금(7502)","신한세금(7033)","신한(7665)","신한(0830)","기상청(6210)","신한(6251)","신한(6275)","신한(7121)","신한(8220)","신한(8246)","전북은행(5810)","신한대출(7668)"],
+  projects:["본사","기상기후인재개발원(늘봄)","교원대 창의파크","국립새만금간척박물관","에코프로(어린이재단)","파주시환경교육계획","국립해양과학관 교구대여","유아교원연수프로그램운영","해양교육교구보급관리","해양교원연수","가치다다","전북지방환경청(에코에듀)","중등해양교재개발","이화여대 늘봄교육","호랑디지털 교육패키지","산사태 대피교육 콘텐츠개발"],
+  employees:[
+    {name:"김나영",dept:"개발지원",position:"팀장",joined:"2019-09-03",annual:17},
+    {name:"민인홍",dept:"교육지원",position:"팀장",joined:"2020-06-01",annual:17},
+    {name:"김하나1",dept:"교육지원",position:"팀장",joined:"2022-06-01",annual:16,memo:"육아휴직후"},
+    {name:"김성범",dept:"사업지원",position:"부장",joined:"2019-12-02",annual:17},
+    {name:"김하나",dept:"교육지원",position:"팀장",joined:"2022-04-18",annual:16,memo:"육아휴직전"}
+  ]
+};
+function loadSeed(){
+  if(!confirm("㈜창체넷 기초자료(계좌·사업명·직원명·예산 사업)를 추가합니다.\n※ 잔고·주민번호·급여 등 민감정보는 포함되지 않습니다.\n기존 데이터는 유지되며 중복될 수 있습니다. 계속할까요?")) return;
+  Store.data._seed={accounts:SEED.accounts, projects:SEED.projects};
+  SEED.employees.forEach(e=>{ if(!Store.list("employees").some(x=>x.name===e.name)) Store.upsert("employees",{...e}); });
+  SEED.projects.forEach(p=>{ if(!Store.list("budgets").some(b=>b.project===p)) Store.upsert("budgets",{project:p,item:"",amount:0,year:new Date().getFullYear()}); });
+  Store.save();
+  toast("기초자료를 불러왔습니다"); Router.go(Router.current);
+}
+function seededProjects(){ // 사업명 후보: 시드 + 예산 + 거래 + 지급
+  const s=new Set((Store.data._seed&&Store.data._seed.projects)||[]);
+  Store.list("budgets").forEach(b=>b.project&&s.add(b.project));
+  Store.list("txns").forEach(t=>t.project&&s.add(t.project));
+  return [...s];
+}
+function seededAccounts(){ return (Store.data._seed&&Store.data._seed.accounts)||[]; }
 
 /* ---------- 스키마 (제네릭 CRUD 모듈) ---------- */
 const SCHEMA = {
@@ -428,6 +461,7 @@ const NAV = [
   {id:"docgen",label:"문서 생성",icon:"🖨️"},
   {grp:"회계·자금"},
   {id:"txns",label:"거래내역·전표",icon:"💳"},
+  {id:"payments",label:"강사·자문비 지급",icon:"💰"},
   {id:"budgets",label:"사업예산 집행",icon:"📈"},
   {grp:"조직·자료"},
   {id:"docs",label:"문서·인증 갱신",icon:"📑"},
@@ -468,6 +502,7 @@ function render(id){
   if(id==="dashboard") return renderDashboard();
   if(id==="todos") return renderTodos();
   if(id==="txns") return renderTxns();
+  if(id==="payments") return renderPayments();
   if(id==="budgets") return renderBudgets();
   if(id==="docgen") return renderDocGen();
   if(SCHEMA[id]) return renderGeneric(id);
@@ -720,10 +755,10 @@ function openTxn(id){
   openModal((id?"수정":"입력")+" · 거래 전표",`<form id="txnForm" class="frm">
     <div class="fld"><label>일자 <span class="req">*</span></label><input type="date" name="date" value="${esc(t.date||todayStr())}"></div>
     <div class="fld"><label>구분 <span class="req">*</span></label><select name="type">${OPT.txnType.map(o=>`<option ${o===(t.type||'지출')?'selected':''}>${o}</option>`).join('')}</select></div>
-    <div class="fld"><label>계정과목</label><input name="account" list="dl_acc" value="${esc(t.account||'')}"><datalist id="dl_acc">${OPT.account.map(o=>`<option value="${o}">`).join('')}</datalist></div>
+    <div class="fld"><label>계정과목</label><input name="account" list="dl_acc" value="${esc(t.account||'')}"><datalist id="dl_acc">${[...OPT.ledgerAccount,...OPT.account].map(o=>`<option value="${o}">`).join('')}</datalist></div>
     <div class="fld"><label>거래처</label><input name="vendor" list="dl_v2" value="${esc(t.vendor||'')}"><datalist id="dl_v2">${vopts}</datalist></div>
     <div class="fld full"><label>적요(내용) <span class="req">*</span></label><input name="desc" value="${esc(t.desc||'')}"></div>
-    <div class="fld"><label>결제수단</label><select name="pay">${OPT.payMethod.map(o=>`<option ${o===(t.pay||'법인통장')?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="fld"><label>결제수단/계좌</label><input name="pay" list="dl_pay" value="${esc(t.pay||'')}" placeholder="계좌 선택 또는 입력"><datalist id="dl_pay">${[...seededAccounts(),...OPT.payMethod].map(o=>`<option value="${o}">`).join('')}</datalist></div>
     <div class="fld"><label>증빙</label><select name="evidence">${OPT.evidence.map(o=>`<option ${o===(t.evidence||'세금계산서')?'selected':''}>${o}</option>`).join('')}</select></div>
     <div class="fld"><label>공급가액(원)</label><input type="number" name="supply" value="${t.supply??''}" oninput="autoVat()"></div>
     <div class="fld"><label>부가세(원) <span class="hint">10% 자동</span></label><input type="number" name="vat" id="vatField" value="${t.vat??''}"></div>
@@ -835,6 +870,157 @@ function saveBudget(id){
   ["project","item","amount","year","memo"].forEach(k=>o[k]=fd.get(k));
   if(!o.project.trim()||!o.amount){ toast("사업명과 예산액은 필수입니다"); return; }
   Store.upsert("budgets",o); closeModal(); toast("저장되었습니다"); drawBudgets();
+}
+
+/* ============================================================
+   강사·자문비 지급 (원천징수: 기타소득 8.8% / 사업소득 3.3%)
+   ============================================================ */
+function withhold(gross,type){
+  gross=Number(gross)||0;
+  const rate=String(type||"").includes("3.3")?0.03:0.08;
+  const income=Math.floor(gross*rate/10)*10;   // 소득세 10원미만 절사
+  const local=Math.floor(income*0.1/10)*10;     // 지방소득세 10원미만 절사
+  return {rate, income, local, deduct:income+local, net:gross-income-local};
+}
+function genDocNo(payDate,type){
+  const d=String(payDate||todayStr()).replace(/-/g,'').slice(2); // YYMMDD
+  const suffix=String(type||"").includes("3.3")?"나":"가";
+  const base="bu"+d+suffix;
+  const n=Store.list("payments").filter(p=>p.docno&&p.docno.indexOf(base+"-")===0).length+1;
+  return base+"-"+n;
+}
+function renderPayments(){
+  setHeader("강사·자문비 지급 (원천징수)","기타소득 8.8% · 사업소득 3.3% 자동계산, 지급대장·지출결의서",
+    `<button class="btn no-print" onclick="exportCSV('payments')">CSV 내보내기</button>
+     <button class="btn no-print" onclick="window.print()">🖨️ 지급대장 인쇄</button>
+     <button class="btn primary no-print" onclick="openPayment()">+ 지급 입력</button>`);
+  genState.payments=genState.payments||{month:todayStr().slice(0,7),type:"",q:""};
+  $('#view').innerHTML=`
+    <div class="cards" id="payCards"></div>
+    <div class="panel"><div class="ph no-print">
+      <div class="filters">
+        <input type="month" id="payMonth" value="${genState.payments.month}">
+        <select id="payType"><option value="">전체</option>${OPT.incomeType.map(o=>`<option>${o}</option>`).join('')}</select>
+        <input type="search" id="payQ" placeholder="성명·프로젝트·적요 검색…">
+      </div>
+      <span class="mini" id="payCount"></span>
+    </div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>
+      <th>문서번호</th><th>이체일</th><th>구분</th><th>프로젝트/학교</th><th>성명</th><th>적요</th>
+      <th class="num">지급액</th><th class="num">소득세</th><th class="num">지방세</th><th class="num">실지급액</th><th class="no-print" style="width:150px"></th>
+    </tr></thead><tbody id="payRows"></tbody></table></div></div>`;
+  $('#payMonth').onchange=e=>{genState.payments.month=e.target.value; drawPayments();};
+  $('#payType').value=genState.payments.type; $('#payType').onchange=e=>{genState.payments.type=e.target.value; drawPayments();};
+  $('#payQ').oninput=e=>{genState.payments.q=e.target.value; drawPayments();};
+  drawPayments();
+}
+function payFiltered(){
+  let rows=Store.list("payments").slice().sort((a,b)=>(b.payDate||"").localeCompare(a.payDate||""));
+  const st=genState.payments;
+  if(st.month) rows=rows.filter(r=>(r.payDate||"").startsWith(st.month));
+  if(st.type) rows=rows.filter(r=>r.incomeType===st.type);
+  if(st.q){ const q=st.q.toLowerCase(); rows=rows.filter(r=>[r.name,r.project,r.desc].some(v=>String(v||"").toLowerCase().includes(q))); }
+  return rows;
+}
+function drawPayments(){
+  const rows=payFiltered();
+  let g=0,d=0,net=0; rows.forEach(r=>{const w=withhold(r.gross,r.incomeType); g+=Number(r.gross)||0; d+=w.deduct; net+=w.net;});
+  $('#payCards').innerHTML=`
+    ${card("지급 인원",rows.length+"<small> 건</small>","b")}
+    ${card("총 지급액",won(g)+"<small> 원</small>","n")}
+    ${card("총 공제(원천세)",won(d)+"<small> 원</small>","o")}
+    ${card("총 실지급액",won(net)+"<small> 원</small>","g")}`;
+  $('#payCount').textContent=`${rows.length}건`;
+  const tb=$('#payRows');
+  if(!rows.length){ tb.innerHTML=`<tr><td colspan="11"><div class="empty"><div class="big">💰</div>해당 월 지급 내역이 없습니다.</div></td></tr>`; return; }
+  tb.innerHTML=rows.map(r=>{ const w=withhold(r.gross,r.incomeType); const et=!String(r.incomeType||'').includes('3.3');
+    return `<tr>
+      <td class="mini">${esc(r.docno)}</td><td>${esc(r.payDate)}</td>
+      <td>${badgeFor(et?'기타 8.8%':'사업 3.3%',{"기타 8.8%":"b","사업 3.3%":"o"})}</td>
+      <td>${esc(r.project)||'<span class="mini">-</span>'}</td><td><b>${esc(r.name)}</b></td><td class="mini">${esc(r.desc)}</td>
+      <td class="num">${won(r.gross)}</td><td class="num">${won(w.income)}</td><td class="num">${won(w.local)}</td>
+      <td class="num"><b>${won(w.net)}</b></td>
+      <td class="no-print"><div class="rowbtns">
+        <button class="btn sm ghost" onclick="showPayVoucher('${r.id}')">결의서</button>
+        <button class="btn sm ghost" onclick="openPayment('${r.id}')">수정</button>
+        <button class="btn sm ghost" onclick="delPayment('${r.id}')">🗑</button>
+      </div></td></tr>`;}).join('');
+}
+function delPayment(id){ if(!confirm("삭제하시겠습니까?")) return; Store.remove("payments",id); drawPayments(); }
+function openPayment(id){
+  const p=id?Store.get("payments",id):{};
+  const projOpts=seededProjects().map(x=>`<option>${esc(x)}</option>`).join('');
+  const suggested=id?(p.docno||''):genDocNo(p.payDate,p.incomeType||OPT.incomeType[0]);
+  openModal((id?"수정":"입력")+" · 강사·자문비 지급",`<form id="payForm" class="frm" ${id?'data-edit="1"':''}>
+    <div class="fld"><label>지급구분 <span class="req">*</span></label><select name="incomeType" onchange="payRecalc();payDocRefresh()">${OPT.incomeType.map(o=>`<option ${o===(p.incomeType||OPT.incomeType[0])?'selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="fld"><label>문서번호 <span class="hint">자동생성·수정가능</span></label><input name="docno" value="${esc(suggested)}"></div>
+    <div class="fld"><label>교육/자문 실시일</label><input type="date" name="evtDate" value="${esc(p.evtDate||'')}"></div>
+    <div class="fld"><label>이체일 <span class="req">*</span></label><input type="date" name="payDate" value="${esc(p.payDate||todayStr())}" onchange="payDocRefresh()"></div>
+    <div class="fld full"><label>프로젝트/학교명</label><input name="project" list="dl_proj" value="${esc(p.project||'')}"><datalist id="dl_proj">${projOpts}</datalist></div>
+    <div class="fld"><label>강의일시</label><input name="lecture" value="${esc(p.lecture||'')}"></div>
+    <div class="fld"><label>적요(내용) <span class="req">*</span></label><input name="desc" value="${esc(p.desc||'')}"></div>
+    <div class="fld"><label>성명 <span class="req">*</span></label><input name="name" value="${esc(p.name||'')}"></div>
+    <div class="fld"><label>연락처</label><input name="phone" value="${esc(p.phone||'')}"></div>
+    <div class="fld"><label>주민등록번호</label><input name="rrn" value="${esc(p.rrn||'')}" placeholder="세금계산용 · 이 PC 브라우저에만 저장"></div>
+    <div class="fld full"><label>주소</label><input name="addr" value="${esc(p.addr||'')}"></div>
+    <div class="fld full"><label>은행/계좌번호/예금주</label><input name="bank" value="${esc(p.bank||'')}"></div>
+    <div class="fld"><label>지급총액(세전, 원) <span class="req">*</span></label><input type="number" name="gross" value="${p.gross??''}" oninput="payRecalc()"></div>
+    <div class="fld"><label>비고</label><input name="memo" value="${esc(p.memo||'')}"></div>
+    <div class="fld full"><div id="payCalc" style="border:1px solid var(--brand);background:var(--brand-soft);border-radius:8px;padding:11px 14px"></div></div>
+  </form>`,
+  `<button class="btn" onclick="closeModal()">취소</button><button class="btn primary" onclick="savePayment('${id||''}')">저장</button>`,true);
+  payRecalc();
+}
+function payRecalc(){
+  const f=$('#payForm'); if(!f) return;
+  const w=withhold(f.gross.value, f.incomeType.value);
+  $('#payCalc').innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;flex-wrap:wrap">
+    <span>지급총액 <b>${won(f.gross.value)}</b></span>
+    <span>소득세(${(w.rate*100).toFixed(0)}%) <b>${won(w.income)}</b></span>
+    <span>지방소득세 <b>${won(w.local)}</b></span>
+    <span>공제계 <b>${won(w.deduct)}</b></span>
+    <span style="color:var(--brand-ink)">실지급액 <b>${won(w.net)}</b></span></div>`;
+}
+function payDocRefresh(){
+  const f=$('#payForm'); if(!f||f.dataset.edit==='1') return;
+  if(f.docno.value && !/^bu\d{6}[가나]-\d+$/.test(f.docno.value)) return; // 사용자 임의 입력은 유지
+  f.docno.value=genDocNo(f.payDate.value, f.incomeType.value);
+}
+function savePayment(id){
+  const fd=new FormData($('#payForm')); const o=id?{id}:{};
+  ["incomeType","docno","evtDate","payDate","project","lecture","desc","name","phone","rrn","addr","bank","gross","memo"].forEach(k=>o[k]=fd.get(k));
+  if(!String(o.name).trim()||!o.payDate||!o.gross){ toast("성명·이체일·지급총액은 필수입니다"); return; }
+  if(!String(o.desc).trim()){ toast("적요를 입력하세요"); return; }
+  Store.upsert("payments",o); closeModal(); toast("저장되었습니다"); drawPayments();
+}
+function showPayVoucher(id){
+  const p=Store.get("payments",id); if(!p) return;
+  const w=withhold(p.gross,p.incomeType); const isEtc=!String(p.incomeType||'').includes('3.3');
+  setHeader("지출결의서",(isEtc?'자문비':'강사비')+" 지출결의서 · "+p.name,
+    `<button class="btn no-print" onclick="Router.go('payments')">← 목록</button>
+     <button class="btn primary no-print" onclick="window.print()">🖨️ 인쇄 / PDF</button>`);
+  $('#view').innerHTML=`<div class="panel pb pad"><div class="doc-preview">
+    <h1>${isEtc?'자문비':'강사비'} 지출결의서</h1>
+    <table>
+      <tr><th>문서번호</th><td>${esc(p.docno)}</td><th>이체일자</th><td>${esc(p.payDate)}</td></tr>
+      <tr><th>프로젝트/학교</th><td>${esc(p.project)||'&nbsp;'}</td><th>실시일</th><td>${esc(p.evtDate)||'-'}</td></tr>
+      <tr><th>강의일시</th><td>${esc(p.lecture)||'-'}</td><th>지급구분</th><td>${esc(p.incomeType)}</td></tr>
+      <tr><th>적요</th><td colspan="3">${esc(p.desc)||'&nbsp;'}</td></tr>
+    </table>
+    <p style="margin:14px 0 4px;font-weight:700">■ 지급 대상</p>
+    <table>
+      <tr><th>성명</th><td>${esc(p.name)}</td><th>연락처</th><td>${esc(p.phone)||'-'}</td></tr>
+      <tr><th>주민번호</th><td>${esc(p.rrn)||'-'}</td><th>주소</th><td>${esc(p.addr)||'-'}</td></tr>
+      <tr><th>계좌</th><td colspan="3">${esc(p.bank)||'-'}</td></tr>
+    </table>
+    <p style="margin:14px 0 4px;font-weight:700">■ 영수 내역</p>
+    <table>
+      <tr><th>지급총액</th><th>소득세(${(w.rate*100).toFixed(1)}%)</th><th>지방소득세</th><th>공제계</th><th>실지급액</th></tr>
+      <tr><td class="right">${won(p.gross)}</td><td class="right">${won(w.income)}</td><td class="right">${won(w.local)}</td><td class="right">${won(w.deduct)}</td><td class="right"><b>${won(w.net)}</b></td></tr>
+    </table>
+    <div class="sign">위 금액을 지출하고자 결의합니다.<br>${esc(p.payDate)}<br><br>제출자 : ______________ (인)</div>
+  </div></div>`;
+  window.scrollTo(0,0);
 }
 
 /* ============================================================
