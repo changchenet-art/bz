@@ -180,6 +180,7 @@
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="foot">
+      <button onclick="openPasteImport()">📋 붙여넣기로 가져오기</button>
       <button onclick="loadSeed()">🏢 ㈜창체넷 기초자료</button>
       <button onclick="Backup.export()">⬇ 전체 백업 (JSON)</button>
       <button onclick="Backup.importPrompt()">⬆ 백업 복원</button>
@@ -1289,6 +1290,43 @@ const Backup={
   applyJSON(text){ if(!confirm("현재 데이터를 백업 파일 내용으로 덮어씁니다. 계속할까요?")) return;
     const obj=JSON.parse(text); Store.data=obj; Store.save(); toast("복원되었습니다"); Router.go(Router.current); }
 };
+
+/* ---------- 붙여넣기로 가져오기 (Claude가 만든 데이터를 한 번에 등록) ---------- */
+const COLL_LABEL={todos:"할 일",vendors:"거래처",orders:"발주·견적",contacts:"연락처",docs:"문서·인증",contracts:"계약",employees:"직원",leaves:"휴가·근태",budgets:"사업예산",txns:"거래내역·전표",payments:"강사·자문비"};
+function labelOf(k){ return COLL_LABEL[k]||k; }
+function openPasteImport(){
+  openModal("📋 붙여넣기로 가져오기",
+    `<p class="mini">Claude가 만들어 준 데이터(JSON)를 아래 칸에 붙여넣고 <b>[가져오기]</b>를 누르세요.<br>손으로 입력하지 않아도 해당 항목이 자동으로 등록됩니다.</p>
+     <textarea id="pasteBox" spellcheck="false" style="width:100%;min-height:240px;font-family:monospace;font-size:12px;border:1px solid var(--line);border-radius:8px;padding:10px" placeholder='{
+  "orders": [
+    {"date":"2026-08-14","kind":"견적","vendor":"○○교육청","item":"교재 개발 용역","amount":5000000}
+  ],
+  "contacts": [
+    {"name":"홍길동","type":"강사","phone":"010-0000-0000"}
+  ]
+}'></textarea>
+     <div id="pasteMsg" class="mini" style="margin-top:8px"></div>`,
+    `<button class="btn" onclick="closeModal()">취소</button><button class="btn primary" onclick="runPasteImport()">가져오기</button>`, true);
+  setTimeout(()=>{const b=$('#pasteBox'); if(b) b.focus();},100);
+}
+function runPasteImport(){
+  const raw=($('#pasteBox').value||"").trim();
+  if(!raw){ toast("붙여넣은 내용이 없습니다"); return; }
+  let obj; try{ obj=JSON.parse(raw); }
+  catch(e){ $('#pasteMsg').innerHTML=`<span style="color:var(--danger)">JSON 형식 오류: ${esc(e.message)}</span>`; return; }
+  const known=["todos","vendors","orders","contacts","docs","contracts","employees","leaves","budgets","txns","payments"];
+  let total=0; const report=[];
+  Object.keys(obj).forEach(k=>{
+    if(!known.includes(k)){ report.push(`⚠️ '${esc(k)}' 는 알 수 없는 항목 — 건너뜀`); return; }
+    const arr=Array.isArray(obj[k])?obj[k]:[obj[k]];
+    let n=0; arr.forEach(item=>{ if(item&&typeof item==='object'){ const c={...item}; delete c.id; Store.upsert(k,c); n++; total++; } });
+    report.push(`✅ ${labelOf(k)}: ${n}건 추가`);
+  });
+  if(!total){ $('#pasteMsg').innerHTML=`<span style="color:var(--danger)">가져올 항목이 없습니다. 형식을 확인하세요.</span>`; return; }
+  $('#pasteMsg').innerHTML=report.join('<br>');
+  toast(`총 ${total}건을 가져왔습니다`);
+  setTimeout(()=>{ closeModal(); Router.go(Router.current); }, 1300);
+}
 
 /* ============================================================
    서버 동기화 (카페24 PHP+MySQL) — 온라인이면 서버에 저장/불러오기
