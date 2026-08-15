@@ -279,7 +279,6 @@ const OPT = {
 
 /* ---------- ㈜창체넷 기초자료 (잔고·주민번호·급여 등 민감정보 제외) ---------- */
 const SEED={
-  vendors:[], // 계좌는 결제수단 자유입력으로 사용
   accounts:["농협대출(6801)","농협(6771)","농협입출금(3253)","농협직원법인(5833)","생물자원관(5863)","농협(0493)","신한입출금(7502)","신한세금(7033)","신한(7665)","신한(0830)","기상청(6210)","신한(6251)","신한(6275)","신한(7121)","신한(8220)","신한(8246)","전북은행(5810)","신한대출(7668)"],
   projects:["본사","기상기후인재개발원(늘봄)","교원대 창의파크","국립새만금간척박물관","에코프로(어린이재단)","파주시환경교육계획","국립해양과학관 교구대여","유아교원연수프로그램운영","해양교육교구보급관리","해양교원연수","가치다다","전북지방환경청(에코에듀)","중등해양교재개발","이화여대 늘봄교육","호랑디지털 교육패키지","산사태 대피교육 콘텐츠개발"],
   employees:[
@@ -288,14 +287,64 @@ const SEED={
     {name:"김하나1",dept:"교육지원",position:"팀장",joined:"2022-06-01",annual:16,memo:"육아휴직후"},
     {name:"김성범",dept:"사업지원",position:"부장",joined:"2019-12-02",annual:17},
     {name:"김하나",dept:"교육지원",position:"팀장",joined:"2022-04-18",annual:16,memo:"육아휴직전"}
+  ],
+  vendors:[
+    {name:"(재)한국해양재단",kind:"매출처"},{name:"한국환경보전원",kind:"매출처"},{name:"국립새만금간척박물관",kind:"매출처"},
+    {name:"국립생태원 멸종위기종복원센터",kind:"매출처"},{name:"특허청",kind:"매출처"},{name:"청주시청",kind:"매출처"},
+    {name:"(재)충북인재평생교육진흥원",kind:"매출처"},{name:"초록우산 어린이재단",kind:"매출처"},{name:"충북과학기술혁신원",kind:"매출처"},
+    {name:"충청북도 청남대관리사업소",kind:"매출처"},{name:"한국고용정보원",kind:"매출처"},{name:"충북대학교 산학협력단",kind:"매출처"},
+    {name:"계룡시",kind:"매출처"},{name:"해양교통안전공단",kind:"매출처"},{name:"섬진강어류생태관",kind:"매출처"},
+    {name:"이화여대 늘봄사업단",kind:"매출처"},{name:"직지프린팅",kind:"매입처"}
+  ],
+  contracts:[
+    {name:"청주시 사회적기업통합플랫폼(가치다다)",party:"청주시청",amount:2000000,start:"2024-01-01",end:"2024-12-31",status:"완료",memo:"분기별"},
+    {name:"유아 해양교육 교구 개발",party:"(재)한국해양재단",amount:30000000,start:"2024-01-17",end:"2024-01-26",status:"완료"},
+    {name:"2024 섬진강어류생태관 체험프로그램 개발",party:"섬진강어류생태관",amount:3000000,start:"2024-03-18",end:"2024-06-15",status:"완료"},
+    {name:"2024 국립새만금간척박물관 교육 프로그램 운영",party:"국립새만금간척박물관",amount:57000000,start:"2024-02-20",end:"2024-12-20",status:"완료"},
+    {name:"2024 금강과 함께하는 생태교육",party:"한국환경보전원",amount:19408000,end:"2024-11-29",status:"완료",memo:"영세"},
+    {name:"2024 충북 다자녀가족 캠프 운영",party:"(재)충북인재평생교육진흥원",amount:22000000,start:"2024-05-07",end:"2024-05-30",status:"완료",memo:"영세"},
+    {name:"유아 해양교육 교보재 활용 교원 연수프로그램 운영",party:"(재)한국해양재단",amount:30000000,start:"2024-05-02",end:"2024-08-30",status:"완료",memo:"영세"},
+    {name:"2024 초록우산 아이리더 해외탐방 및 교육",party:"초록우산 어린이재단",amount:9100000,start:"2024-05-17",end:"2024-06-17",status:"완료",memo:"영세"},
+    {name:"ESG경영컨설턴트 2급 과정",party:"충북과학기술혁신원",amount:6500000,end:"2024-08-09",status:"완료",memo:"영세"},
+    {name:"청남대 나라사랑 교육문화원 운영 기본계획 수립 연구",party:"충청북도 청남대관리사업소",amount:29090900,start:"2024-05-27",end:"2024-08-24",status:"완료"},
+    {name:"종 보전 전문인력 역량강화 교육 교재 개발",party:"국립생태원 멸종위기종복원센터",amount:48000000,start:"2024-06-03",end:"2024-11-29",status:"완료"},
+    {name:"고용정보원 취업캠프(굿job캠프)",party:"한국고용정보원",amount:15000000,start:"2024-07-23",end:"2024-08-31",status:"완료"},
+    {name:"2024 유아 해양교육 교구 대여 및 관리 용역",party:"(재)한국해양재단",amount:4180000,start:"2024-07-24",end:"2024-11-29",status:"완료"},
+    {name:"2024 금강과 함께하는 생태교육 고도화",party:"한국환경보전원",amount:107800000,start:"2024-07-25",end:"2024-11-30",status:"완료"},
+    {name:"유아 해양교육 교원 연수프로그램 영상 개발",party:"(재)한국해양재단",amount:19500000,start:"2024-09-20",end:"2024-11-29",status:"완료"},
+    {name:"해양 직업과 진로(고등용) 교재 개발 용역",party:"(재)한국해양재단",amount:42263000,start:"2024-09-13",end:"2024-11-29",status:"완료"},
+    {name:"(정책연구) 늘봄학교 발명교육 초등1-2학년 프로그램 개발",party:"특허청",amount:68250000,start:"2024-09-12",end:"2024-12-23",status:"완료",memo:"영세"},
+    {name:"산학연협력 선도대학 육성사업(LINC3.0)",party:"충북대학교 산학협력단",amount:4620000,end:"2024-10-10",status:"완료"},
+    {name:"계룡 2024 탄소중립실천 시민공감 한마당 부스 운영",party:"계룡시",amount:2000000,start:"2024-10-03",end:"2024-10-04",status:"완료",memo:"영세"},
+    {name:"2024 영산강·섬진강수계 수변녹지 생태교육 운영 용역",party:"한국환경보전원",amount:22000000,start:"2024-10-30",end:"2024-11-29",status:"완료",memo:"영세"},
+    {name:"생애주기별 유아 해양교육 교구 추가 제작 용역",party:"(재)한국해양재단",amount:15500000,start:"2024-10-29",end:"2024-11-29",status:"완료"},
+    {name:"교육 매뉴얼(지도서) 및 활동지 제작 용역",party:"해양교통안전공단",amount:11800000,start:"2024-11-15",end:"2024-12-10",status:"완료"},
+    {name:"유아해양교육교구 대여 및 관리",party:"(재)한국해양재단",amount:5373630,end:"2024-12-03",status:"완료"},
+    {name:"해양교육교구 코딩봇 펌웨어 업데이트",party:"(재)한국해양재단",amount:1056000,end:"2024-12-19",status:"완료"},
+    {name:"키즈마린파크 교보재(워크북) 개발용역",party:"(재)한국해양재단",amount:28765000,end:"2024-12-19",status:"완료"}
+  ],
+  orders:[
+    {date:"2026-08-12",kind:"견적",vendor:"이화여대 늘봄사업단",item:"코딩 교구 임차(25개·3개월)+교재 3종·50명",amount:2364780,memo:"공급가 2,149,800+VAT 214,980 / 내부이윤 약 440,800(교구감가 예시 20,000/개)"}
+  ],
+  costs:[
+    {item:"우리환경 코딩교실 교재",category:"교재",vendor:"직지프린팅",unitCost:8060,unit:"권",date:"2026-08-12",memo:"3종 50부 인쇄 견적 26-0812_01"},
+    {item:"코딩로봇 교구",category:"교구",vendor:"(보유·감가)",unitCost:20000,unit:"개·3개월",date:"2026-08-12",memo:"구입가 약 20만원 감가 예시"}
   ]
 };
-function loadSeed(){
-  if(!confirm("㈜창체넷 기초자료(계좌·사업명·직원명·예산 사업)를 추가합니다.\n※ 잔고·주민번호·급여 등 민감정보는 포함되지 않습니다.\n기존 데이터는 유지되며 중복될 수 있습니다. 계속할까요?")) return;
+function applySeed(){
   Store.data._seed={accounts:SEED.accounts, projects:SEED.projects};
-  SEED.employees.forEach(e=>{ if(!Store.list("employees").some(x=>x.name===e.name)) Store.upsert("employees",{...e}); });
-  SEED.projects.forEach(p=>{ if(!Store.list("budgets").some(b=>b.project===p)) Store.upsert("budgets",{project:p,item:"",amount:0,year:new Date().getFullYear()}); });
+  const has=(k,fn)=>Store.list(k).some(fn);
+  SEED.employees.forEach(e=>{ if(!has("employees",x=>x.name===e.name)) Store.upsert("employees",{...e}); });
+  SEED.projects.forEach(p=>{ if(!has("budgets",b=>b.project===p)) Store.upsert("budgets",{project:p,item:"",amount:0,year:2026}); });
+  SEED.vendors.forEach(v=>{ if(!has("vendors",x=>x.name===v.name)) Store.upsert("vendors",{...v}); });
+  SEED.contracts.forEach(c=>{ if(!has("contracts",x=>x.name===c.name)) Store.upsert("contracts",{started:"해당없음",...c}); });
+  SEED.orders.forEach(o=>{ if(!has("orders",x=>x.item===o.item&&x.vendor===o.vendor)) Store.upsert("orders",{...o}); });
+  SEED.costs.forEach(c=>{ if(!has("costs",x=>x.item===c.item)) Store.upsert("costs",{...c}); });
   Store.save();
+}
+function loadSeed(){
+  if(!confirm("㈜창체넷 기초자료(계좌·사업명·직원·거래처·2024 계약 26건·이화여대 견적·원가)를 불러옵니다.\n※ 잔고·주민번호·급여 등 민감정보는 포함되지 않습니다.\n이미 있는 항목은 건너뜁니다. 계속할까요?")) return;
+  applySeed();
   toast("기초자료를 불러왔습니다"); Router.go(Router.current);
 }
 function seededProjects(){ // 사업명 후보: 시드 + 예산 + 거래 + 지급
@@ -1427,6 +1476,12 @@ const Sync={
    ============================================================ */
 function init(){
   Store.load();
+  // 처음 실행(데이터 없음)이면 ㈜창체넷 실제 기초자료를 자동으로 채움
+  if(!Store.data._seededFull){
+    const empty = ["vendors","contracts","orders","costs","employees","budgets","txns","payments"].every(k=>Store.list(k).length===0);
+    if(empty){ applySeed(); }
+    Store.data._seededFull = true; Store.save();
+  }
   buildNav();
   const start=location.hash.slice(1)||"dashboard";
   Router.go(start);          // 로컬 데이터로 즉시 표시
