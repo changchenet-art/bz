@@ -30,6 +30,7 @@ from .parse import html_doc as p_html
 from .parse import issue as p_issue
 from .render import canva as r_canva
 from .render import html_deck as r_html
+from .render import notes_doc as r_notes
 from .render import pdf_notes as r_pdf
 from .render import pptx_local as r_pptx
 from .schema import Deck
@@ -76,6 +77,10 @@ def cmd_gen(args) -> None:
         path = os.path.join(args.out_dir, f"{stem}.html")
         r_html.build(deck, path, skin=args.skin)
         made.append(path)
+    if args.engine == "notes":
+        path = os.path.join(args.out_dir, f"{stem}_발표노트.html")
+        r_notes.build(deck, path, skin=args.skin)
+        made.append(path)
     if args.format in ("pdf", "both"):
         path = os.path.join(args.out_dir, f"{stem}_설명자료.pdf")
         r_pdf.build(deck, path)
@@ -116,8 +121,10 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--issue", help="부정 이슈 파일 (대응 브리핑 모드)")
     g.add_argument("--manuscript", help="대응 원고 파일 (--issue 와 함께)")
     g.add_argument("--skin", default=None, help=f"스킨 키 (기본: {DEFAULT_SKIN})")
-    g.add_argument("--engine", choices=["local", "canva", "html"], default="local",
-                   help="출력 엔진 (local=python-pptx, canva=자동채우기, html=HTML 덱)")
+    g.add_argument("--engine", choices=["local", "canva", "html", "notes"],
+                   default="local",
+                   help="출력 엔진 (local=python-pptx, canva=자동채우기, "
+                        "html=발표 슬라이드 덱, notes=발표노트 문서)")
     g.add_argument("--format", choices=["pptx", "pdf", "both"], default="both")
     g.add_argument("--out-dir", default="output")
     g.add_argument("--name", help="출력 파일명(확장자 제외)")

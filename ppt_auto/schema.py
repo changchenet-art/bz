@@ -77,6 +77,14 @@ class Slide:
     reveal: bool = True            # 단계적 표현(항목 하나씩 등장) 사용 여부
     usage: str = ""                # "활용 상황" 메모(선택)
 
+    # ── 발표노트(예시 포맷) 전용 리치 필드 ─────────────────────
+    time: str = ""                 # "40초" 등 배정 시간
+    points: list[str] = field(default_factory=list)  # 발표 멘트(핵심 강조 문장)
+    hook: list[str] = field(default_factory=list)     # ★강점 — 못 박을 것
+    bait: list[str] = field(default_factory=list)     # 🎣미끼 — 끌어낼 질문
+    ref: list[str] = field(default_factory=list)      # 참고 — 근거
+    shot: str = ""                 # 사진/캡처 자리표 라벨(있으면 표시)
+
 
 @dataclass
 class Deck:
@@ -88,6 +96,10 @@ class Deck:
     slides: list[Slide] = field(default_factory=list)
     # 부정 이슈 대응 모드에서 채워지는 부가 정보
     issue: str = ""                # 대상이 되는 부정적 이슈 원문
+    # 발표노트(예시 포맷) 문서 상단
+    banner_meta: list[str] = field(default_factory=list)   # 배너 메타 pill 문구들
+    strategy_rows: list[dict] = field(default_factory=list)  # 전략지도 표 행
+    #   각 행: {"slide": "04", "q": "공격 Q5 · 실무 Q1", "bait": "감액 조항 …"}
 
     def content_slides(self) -> list[Slide]:
         return [s for s in self.slides

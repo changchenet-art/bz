@@ -37,8 +37,83 @@ def _clean_title(t: str) -> str:
     return t
 
 
+# ── 예시 발표노트(.card) 포맷 리치 파서 ─────────────────────────
+def _inner(el) -> str:
+    """요소의 안쪽 HTML을 <b> 강조만 남기고 공백 정리해 반환."""
+    from bs4 import NavigableString, Tag
+    out = []
+    for c in el.children:
+        if isinstance(c, NavigableString):
+            out.append(str(c))
+        elif isinstance(c, Tag):
+            inner = c.decode_contents()
+            if c.name in ("b", "strong"):
+                out.append(f"<b>{inner}</b>")
+            else:
+                out.append(inner)
+    return re.sub(r"\s+", " ", "".join(out)).strip()
+
+
+def _lis(scope, selector) -> list[str]:
+    box = scope.select_one(selector)
+    if not box:
+        return []
+    return [_inner(li) for li in box.select("li") if _txt(li)]
+
+
+def _parse_cards(soup, *, skin: str) -> Deck:
+    """예시 발표노트 형식(.top 배너 + .strat 전략표 + .card N개)을 그대로 담는다."""
+    top = soup.select_one(".top")
+    title = _txt(top.select_one("h1")) if top and top.select_one("h1") else \
+        (_txt(soup.title) if soup.title else "발표 노트")
+    subtitle = _txt(top.select_one("p")) if top and top.select_one("p") else ""
+    banner = [_txt(d) for d in top.select(".meta div")] if top else []
+
+    deck = Deck(title=title, subtitle=subtitle, skin=skin, banner_meta=banner)
+
+    # 전략지도 표
+    strat = soup.select_one(".strat")
+    if strat and strat.select_one("table"):
+        rows = strat.select("table tr")
+        for tr in rows[1:]:  # 헤더 제외
+            cells = [_txt(td) for td in tr.find_all(["td", "th"])]
+            if len(cells) >= 3:
+                deck.strategy_rows.append(
+                    {"slide": cells[0], "q": cells[1], "bait": cells[2]})
+        deck.issue = _txt(strat.select_one("h3")) if strat.select_one("h3") else ""
+
+    total = len(soup.select(".card"))
+    for i, c in enumerate(soup.select(".card")):
+        h2 = c.select_one(".tl h2") or c.select_one("h2")
+        title_i = _clean_title(_txt(h2)) if h2 else f"슬라이드 {i}"
+        tm = c.select_one(".time")
+        chips = [_txt(x) for x in c.select(".chip")]
+        points = [_inner(li) for li in c.select("ul.talk li") if _txt(li)]
+        hook = _lis(c, ".hook")
+        bait = _lis(c, ".bait")
+        ref = _lis(c, ".ref")
+        shot = "PLACEHOLDER" if c.select_one(".shot img, img") else ""
+
+        layout = Layout.COVER if i == 0 else Layout.CARD_GRID
+        s = Slide(layout=layout, title=title_i,
+                  items=[Item(heading=ch, icon=guess_icon(ch)) for ch in chips[:3]],
+                  time=_txt(tm) if tm else "",
+                  points=points, hook=hook, bait=bait, ref=ref, shot=shot)
+        # 발표자 노트(PDF 설명자료 호환): 스크립트=발표멘트 평문
+        plain = re.sub(r"<[^>]+>", "", "  ".join(points))
+        s.note = SlideNote(summary=title_i, must_know=[re.sub(r"<[^>]+>", "", h)
+                           for h in hook[:3]], script=plain)
+        s.image = "PLACEHOLDER" if shot else ""
+        deck.slides.append(s)
+    return deck
+
+
 def parse(html: str, *, skin: str = DEFAULT_SKIN) -> Deck:
     soup = BeautifulSoup(html, "html.parser")
+
+    # 예시 발표노트 포맷이면 리치 파서 사용
+    if soup.select(".card"):
+        return _parse_cards(soup, skin=skin)
 
     title = ""
     if soup.title and _txt(soup.title):

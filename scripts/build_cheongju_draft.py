@@ -7,9 +7,12 @@ from bs4 import BeautifulSoup
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ppt_auto.render import html_deck  # noqa: E402
+from ppt_auto.parse import html_doc as p_html  # noqa: E402
+from ppt_auto.render import notes_doc as r_notes  # noqa: E402
 
 SRC = "examples/청주해양_발표노트.html"
 OUT_HTML = "output/청주해양_제안발표.html"
+OUT_NOTES = "output/청주해양_발표노트.html"
 FOOTER = "국립청주해양과학관 전시운영 위탁 · 제안발표"
 
 # 슬라이드에 올리지 않을 지문/군더더기
@@ -74,7 +77,12 @@ def main():
 
     os.makedirs("output", exist_ok=True)
     html_deck.write(slides, OUT_HTML, title="국립청주해양과학관 전시운영 위탁 제안")
-    print(f"HTML 덱 생성: {OUT_HTML}  (슬라이드 {len(slides)}장)")
+    print(f"발표 슬라이드 덱: {OUT_HTML}  (슬라이드 {len(slides)}장)")
+
+    # 발표노트 문서(예시 포맷 재현) — 리치 파서로 원본 그대로
+    deck = p_html.parse_file(SRC, skin="report_navy")
+    r_notes.build(deck, OUT_NOTES)
+    print(f"발표노트 문서: {OUT_NOTES}  (카드 {len(deck.slides)}장)")
     return slides
 
 
