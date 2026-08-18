@@ -5,10 +5,46 @@
 배경 #eff9fe/#c7eafb · 표지·간지 #518dcb · 글자 #2a2a2d/#3a3a3a/#888 · 파란 글자 금지
 이미지는 원고에 지정된 파일명을 자리표(점선 박스)로 표시.
 """
-import os
+import base64
+import glob
 import html
+import os
+import sys
 
 W, H = 1122, 794
+
+# 이미지 자료 폴더(원고가 참조하는 파일명을 여기서 찾아 자동 임베드)
+ASSET_DIR = sys.argv[1] if len(sys.argv) > 1 else "assets/갯벌_수업"
+_IMG_CACHE = {}
+
+
+def _find_image(name):
+    """파일명(확장자 제외 이름 포함)으로 ASSET_DIR 아래를 재귀 검색."""
+    if not os.path.isdir(ASSET_DIR):
+        return None
+    key = os.path.splitext(name)[0]
+    if key in _IMG_CACHE:
+        return _IMG_CACHE[key]
+    hit = None
+    for ext in ("png", "jpg", "jpeg", "webp", "gif"):
+        # 정확 파일명 우선
+        exact = glob.glob(os.path.join(ASSET_DIR, "**", f"{key}.{ext}"), recursive=True)
+        # 이름이 포함된 파일(번호 접두사 등 허용)
+        loose = glob.glob(os.path.join(ASSET_DIR, "**", f"*{key}*.{ext}"), recursive=True)
+        cands = exact + loose
+        if cands:
+            hit = cands[0]
+            break
+    _IMG_CACHE[key] = hit
+    return hit
+
+
+def _data_uri(path):
+    ext = os.path.splitext(path)[1].lstrip(".").lower()
+    mime = {"jpg": "jpeg"}.get(ext, ext)
+    with open(path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+    return f"data:image/{mime};base64,{b64}"
 
 CSS = f"""
 *{{box-sizing:border-box;margin:0;padding:0}}
@@ -34,6 +70,8 @@ td{{padding:6px 9px;border:1px solid #cccccc;vertical-align:top;color:#3a3a3a}}
 td.n{{font-weight:700;color:#2a2a2d;white-space:nowrap}}
 .imgph{{background:#dceef8;border:1.5px dashed #8fbfe0;border-radius:10px;display:flex;
        align-items:center;justify-content:center;color:#5c86a5;font-size:12.5px;text-align:center;padding:6px}}
+.imgbox{{border-radius:10px;overflow:hidden;background:#dceef8}}
+.imgbox img{{width:100%;height:100%;object-fit:cover;display:block}}
 .big{{font-size:52px;font-weight:800;color:#2a2a2d;line-height:1}}
 ul{{padding-left:20px}} li{{margin-bottom:6px;font-size:15px}}
 
@@ -74,6 +112,12 @@ def slide(inner, *, cls="", pageno=None, bg=None):
 
 
 def imgph(label, h=200, w="100%"):
+    """폴더에서 파일을 찾으면 실제 이미지를, 없으면 점선 자리표를 반환."""
+    path = _find_image(label)
+    if path:
+        uri = _data_uri(path)
+        return (f'<div class="imgbox" style="height:{h}px;width:{w}">'
+                f'<img src="{uri}" alt="{esc(label)}"></div>')
     return f'<div class="imgph" style="height:{h}px;width:{w}">🖼 {esc(label)}</div>'
 
 
@@ -426,7 +470,11 @@ def main():
     out = "output/한반도갯벌_수업PPT.html"
     with open(out, "w", encoding="utf-8") as f:
         f.write(doc)
+    found = sum(1 for v in _IMG_CACHE.values() if v)
+    total = len(_IMG_CACHE)
     print("생성:", out, "· 슬라이드", len(S), "장")
+    print(f"이미지 폴더: {ASSET_DIR}  (자동 임베드 {found}/{total}, "
+          f"나머지 {total - found}개는 자리표)")
 
 
 if __name__ == "__main__":
