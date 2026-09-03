@@ -1,0 +1,7 @@
+python-pptx>=1.0
+reportlab>=4.0
+openpyxl>=3.1
+beautifulsoup4>=4.12
+
+# 미리보기(선택): HTML 덱 → PNG/PDF 캡처용
+# playwright>=1.40   (설치된 크로미움 바이너리를 executable_path 로 지정)
