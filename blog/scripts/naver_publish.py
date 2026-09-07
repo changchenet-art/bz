@@ -60,14 +60,25 @@ def parse_post(path):
     return {"title": title, "body": body, "tags": tags, "front": front}
 
 
+def inline(text):
+    """**굵게** 표기를 <b>로 바꾼다. 카드뉴스 문체의 강조를 살리기 위한 최소 변환."""
+    return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text, flags=re.S)
+
+
 def to_html(body, tags):
-    """본문 마크다운을 네이버 에디터가 받아들이는 단순 HTML로 변환한다."""
+    """본문 마크다운을 네이버 에디터가 받아들이는 단순 HTML로 변환한다.
+
+    - 빈 줄로 나뉜 덩어리가 문단이 된다.
+    - 문단 안의 줄바꿈은 <br>로 살린다 (카드뉴스처럼 짧게 끊어 쓰는 문체를 그대로 유지).
+    - ■ 로 시작하는 문단은 소제목으로 보아 전체를 굵게 처리한다.
+    """
     parts = []
     for para in [p.strip() for p in body.split("\n\n") if p.strip()]:
+        html = inline(para).replace("\n", "<br>")
         if para.startswith("■"):
-            parts.append(f"<p><b>{para}</b></p>")
+            parts.append("<p><b>" + html + "</b></p>")
         else:
-            parts.append("<p>" + para.replace("\n", "<br>") + "</p>")
+            parts.append("<p>" + html + "</p>")
     if tags:
         parts.append("<p>" + " ".join(tags) + "</p>")
     return "\n".join(parts)
