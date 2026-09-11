@@ -123,9 +123,12 @@ def main():
         print(to_html(post["body"], post["tags"]))
         return
 
-    if post["front"].get("status") != "approved":
-        sys.exit("[중단] front matter의 status가 'approved'가 아닙니다. "
-                 "사용자 확인 후 approved 로 바꾸고 다시 실행하세요.")
+    status = post["front"].get("status")
+    if status == "published":
+        sys.exit("[중단] 이미 발행된 원고입니다(status: published). 중복 발행을 막습니다.")
+    if status not in ("approved", "scheduled"):
+        sys.exit("[중단] front matter의 status가 'approved' 또는 'scheduled'가 아닙니다. "
+                 "사용자 확인 후 바꾸고 다시 실행하세요.")
 
     token = os.environ.get("NAVER_ACCESS_TOKEN")
     if not token:
