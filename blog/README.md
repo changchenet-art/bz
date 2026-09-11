@@ -127,6 +127,22 @@ front matter에 `series: "함께 나아가는 길"`, `episode: N` 을 적는다.
 
 ## 발행 방법
 
+> **이 작업 환경에서는 네이버 발행이 불가능하다.** 네트워크 프록시가 naver.com 전 도메인을
+> 403으로 막는다(openapi·nid·blog 모두). 접근 토큰이 있어도 호출이 나가지 않는다.
+> 아래 API 방식은 프록시 제약이 없는 환경에서 쓰고, 이 환경에서는 손으로 올린다.
+
+### 손으로 올릴 때 — 붙여넣기용 HTML
+
+```bash
+python3 blog/scripts/export_html.py blog/posts/*.md --out blog/export/
+```
+
+`blog/export/` 에 원고별 HTML이 생긴다. 브라우저로 열어 흰 상자 안을 드래그 복사한 뒤
+네이버 글쓰기 에디터에 붙여넣으면 굵은 글씨와 줄바꿈이 그대로 들어간다.
+`status: published` 인 원고는 자동으로 건너뛴다. 이미지는 붙여넣은 뒤 직접 올린다.
+
+### API 방식 (프록시 제약이 없는 환경)
+
 ```bash
 # 1) 변환 결과만 미리 확인 (토큰 불필요)
 python3 blog/scripts/naver_publish.py --dry-run blog/posts/2026-08-27_*.md
