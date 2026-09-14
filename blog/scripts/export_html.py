@@ -9,12 +9,47 @@
   python3 blog/scripts/export_html.py blog/posts/*.md --out blog/export/
 """
 import argparse
+import base64
 import html as html_mod
+import io
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from naver_publish import parse_post, to_html   # 발행 스크립트와 같은 변환기를 쓴다
+
+def embed_images(body_html):
+    """![캡션](경로) 를 실제 그림이 박힌 <img> 로 바꾼다.
+
+    네이버 에디터에 붙여넣을 때 그림이 함께 넘어가도록 파일을 base64 로 심는다.
+    붙여넣기가 안 먹는 경우를 대비해 캡션에 원본 파일명을 남긴다.
+    """
+    from PIL import Image
+
+    def one(m):
+        cap, path = m.group(1), m.group(2)
+        if not os.path.exists(path):
+            return '<p style="color:#c00">[이미지 없음: %s]</p>' % html_mod.escape(path)
+        im = Image.open(path)
+        if im.mode in ("RGBA", "P"):
+            im = im.convert("RGB")
+        w, h = im.size
+        if max(w, h) > 900:                      # 붙여넣기 부담을 줄인다
+            k = 900 / max(w, h)
+            im = im.resize((round(w * k), round(h * k)), Image.LANCZOS)
+        buf = io.BytesIO()
+        im.save(buf, "JPEG", quality=82, optimize=True)
+        b64 = base64.b64encode(buf.getvalue()).decode()
+        return ('<p><img src="data:image/jpeg;base64,%s" alt="%s" '
+                'style="max-width:100%%;height:auto;border-radius:6px;"></p>'
+                '<p style="font-size:13px;color:#888;text-align:center;margin-top:-8px">'
+                '%s <span style="color:#bbb">· %s</span></p>'
+                % (b64, html_mod.escape(cap), html_mod.escape(cap),
+                   html_mod.escape(os.path.basename(path))))
+
+    return re.sub(r"<p>!\[(.*?)\]\((.*?)\)</p>", one, body_html)
+
 
 PAGE = """<!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
@@ -40,7 +75,8 @@ PAGE = """<!doctype html>
   <div><b>카테고리</b> {category} &nbsp;·&nbsp; <b>발행</b> {when} &nbsp;·&nbsp; <b>분량</b> {chars}자</div>
 </div>
 <div class="hint">아래 흰 상자 안을 드래그해 복사한 뒤 네이버 글쓰기 에디터에 붙여넣으세요.
-굵은 글씨와 줄바꿈이 그대로 들어갑니다. 이미지는 붙여넣은 뒤 지정된 자리에 직접 올립니다.</div>
+굵은 글씨·줄바꿈·그림이 함께 들어갑니다. 그림이 안 넘어가면 함께 보낸 이미지 파일을
+캡션에 적힌 이름대로 그 자리에 직접 올리시면 됩니다.</div>
 <div class="body">
 {body}
 </div>
@@ -68,7 +104,7 @@ def main():
             category=html_mod.escape(f.get("category", "-")),
             when=html_mod.escape(when),
             chars=len(post["body"]),
-            body=to_html(post["body"], post["tags"]),
+            body=embed_images(to_html(post["body"], post["tags"])),
         )
         name = os.path.splitext(os.path.basename(path))[0] + ".html"
         out = os.path.join(a.out, name)
