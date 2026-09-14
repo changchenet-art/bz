@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>창체넷 블로그 대문 생성기</title>
+<style>
+  :root{
+    --n1:#2a2a2d; --n2:#3a3a3a; --n3:#5f5f5f; --n4:#888888;
+    --n5:#cccccc; --n6:#e6e6e9; --n7:#f5f5f7; --n8:#fafafc;
+    --main:#40b65a; --mid:#c1dfac; --light:#e6f0cb;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--n8); color:var(--n2);
+    font-family:"Pretendard","Noto Sans KR","맑은 고딕","Malgun Gothic",sans-serif;
+    font-size:14px; line-height:1.5; letter-spacing:-0.3px;
+  }
+  .app{display:grid; grid-template-columns:360px 1fr; min-height:100vh}
+  @media (max-width:900px){ .app{grid-template-columns:1fr} }
+
+  /* ── 좌측 패널 ───────────────────────────────── */
+  .panel{background:#fff; border-right:1px solid var(--n5); padding:20px; overflow-y:auto; max-height:100vh}
+  @media (max-width:900px){ .panel{max-height:none; border-right:none; border-bottom:1px solid var(--n5)} }
+  .brand{display:flex; align-items:center; gap:10px; margin-bottom:4px}
+  .brand .dot{width:14px; height:14px; border-radius:4px; background:var(--main)}
+  .brand h1{margin:0; font-size:17px; font-weight:700; color:var(--n1)}
+  .brand-sub{margin:0 0 18px; font-size:12px; color:var(--n4)}
+
+  fieldset{border:none; border-top:1px solid var(--n5); margin:0 0 4px; padding:16px 0 4px}
+  legend{padding:0 8px 0 0; font-size:13px; font-weight:700; color:var(--n1)}
+  label{display:block; font-size:12px; color:var(--n3); margin:10px 0 4px}
+  input[type=text], input[type=number], select, textarea{
+    width:100%; padding:7px 9px; border:1px solid var(--n5); border-radius:6px;
+    font-family:inherit; font-size:13px; color:var(--n2); background:#fff;
+  }
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--main); outline-offset:-1px}
+  input[type=file]{width:100%; font-size:12px; color:var(--n3)}
+  input[type=range]{width:100%}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
+
+  button{
+    font-family:inherit; font-size:13px; padding:8px 12px; border-radius:6px;
+    border:1px solid var(--n5); background:#fff; color:var(--n2); cursor:pointer;
+  }
+  button:hover{background:var(--n7)}
+  button.primary{background:var(--main); border-color:var(--main); color:#fff; font-weight:700}
+  button.primary:hover{filter:brightness(.94)}
+  button.mini{padding:4px 8px; font-size:12px}
+  .btns{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+
+  /* 메뉴 항목 */
+  .item{border:1px solid var(--n5); border-radius:8px; padding:10px; margin-bottom:10px; background:var(--n8)}
+  .item-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:2px}
+  .item-no{font-size:12px; font-weight:700; color:var(--n1)}
+  .item-tools{display:flex; gap:4px}
+  .hint{font-size:11px; color:var(--n4); margin:6px 0 0; line-height:1.45}
+
+  /* ── 우측 무대 ───────────────────────────────── */
+  .stage{padding:24px; overflow-y:auto; max-height:100vh}
+  @media (max-width:900px){ .stage{max-height:none} }
+  .stage h2{font-size:13px; font-weight:700; color:var(--n1); margin:0 0 8px}
+  .stage-sub{font-size:12px; color:var(--n4); margin:0 0 10px}
+  .preview{background:#fff; border:1px solid var(--n5); border-radius:10px; padding:16px; margin-bottom:22px; overflow-x:auto}
+  canvas{display:block; max-width:100%; height:auto}
+  #titleWrap canvas{border:1px solid var(--n6)}
+  #widgetStrip{display:flex; flex-wrap:wrap; gap:8px; align-items:flex-start}
+  .wcell{text-align:center}
+  .wcell canvas{border:1px solid var(--n6)}
+  .wcell .cap{font-size:11px; color:var(--n4); margin-top:4px}
+
+  textarea#code{height:220px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; line-height:1.5; white-space:pre; letter-spacing:0}
+  details{border:1px solid var(--n5); border-radius:8px; padding:12px 14px; background:#fff; margin-bottom:22px}
+  summary{font-size:13px; font-weight:700; color:var(--n1); cursor:pointer}
+  details ol{margin:12px 0 0; padding-left:20px; color:var(--n2)}
+  details li{margin-bottom:7px}
+  details .note{background:var(--n7); border-left:3px solid var(--main); padding:9px 12px; border-radius:0 6px 6px 0; font-size:12px; color:var(--n3); margin-top:12px}
+  code{background:var(--n7); padding:1px 5px; border-radius:4px; font-size:12px}
+  .toast{
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
+    background:var(--n1); color:#fff; padding:9px 18px; border-radius:20px; font-size:13px;
+    opacity:0; pointer-events:none; transition:opacity .2s;
+  }
+  .toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ══ 좌측: 설정 ══════════════════════════════ -->
+  <aside class="panel">
+    <div class="brand"><span class="dot" id="brandDot"></span><h1>블로그 대문 생성기</h1></div>
+    <p class="brand-sub">㈜창체넷 · 홈페이지형 네이버 블로그</p>
+
+    <fieldset>
+      <legend>1. 테마</legend>
+      <label>사업 분야별 테마색</label>
+      <select id="theme">
+        <option value="green">환경 · 초록 (회사 기본)</option>
+        <option value="blue">해양 · 파랑</option>
+        <option value="amber">교구 보급 · 노랑</option>
+      </select>
+      <p class="hint">창체넷 브랜드 규정에 따라 배경·면에만 테마색을 쓰고 글자는 검정·회색으로 처리합니다.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>2. 상단 타이틀</legend>
+      <label>블로그명</label>
+      <input type="text" id="title" value="㈜창체넷">
+      <label>슬로건 (한 줄)</label>
+      <input type="text" id="slogan" value="환경교육 · 해양교육 콘텐츠 전문기업">
+      <label>보조 문구 (선택)</label>
+      <input type="text" id="subline" value="충북 제1호 사회환경교육기관 · 사회적기업">
+      <label>정렬</label>
+      <select id="align">
+        <option value="left">왼쪽</option>
+        <option value="center">가운데</option>
+      </select>
+      <label>로고 이미지 (선택 · PNG 권장)</label>
+      <input type="file" id="logoFile" accept="image/*">
+      <button class="mini" id="logoClear" style="margin-top:6px">로고 제거</button>
+      <label>배경 이미지 (선택)</label>
+      <input type="file" id="bgFile" accept="image/*">
+      <button class="mini" id="bgClear" style="margin-top:6px">배경 제거</button>
+      <label>배경 어둡게 <span id="dimVal">35</span>%</label>
+      <input type="range" id="dim" min="0" max="75" value="35">
+      <p class="hint">배경 이미지를 넣으면 글자는 흰색으로 자동 전환됩니다.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>3. 크기</legend>
+      <div class="row">
+        <div><label>타이틀 폭(px)</label><input type="number" id="tw" value="966" min="200" max="2000"></div>
+        <div><label>타이틀 높이(px)</label><input type="number" id="th" value="300" min="80" max="900"></div>
+      </div>
+      <div class="row">
+        <div><label>위젯 폭(px)</label><input type="number" id="ww" value="170" min="50" max="400"></div>
+        <div><label>위젯 높이(px)</label><input type="number" id="wh" value="90" min="40" max="600"></div>
+      </div>
+      <p class="hint">네이버 위젯은 폭 170px가 기본값입니다. 보유하신 「위젯등록방법 PDF」의 값이 다르면 그 값을 넣으세요.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>4. 메뉴 위젯</legend>
+      <label>버튼 스타일</label>
+      <select id="wstyle">
+        <option value="fill">면형 (테마색 채움 + 흰 글자)</option>
+        <option value="line">라인형 (흰 바탕 + 얇은 테두리)</option>
+      </select>
+      <div id="items" style="margin-top:14px"></div>
+      <button class="mini" id="addItem">+ 메뉴 추가</button>
+      <p class="hint">이미지 주소는 네이버에 이미지를 올린 뒤 채우면 됩니다. 비워 두면 코드에 자리표시자가 들어갑니다.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>5. 내보내기</legend>
+      <div class="btns">
+        <button class="primary" id="dlTitle">타이틀 PNG 저장</button>
+        <button class="primary" id="dlWidgets">위젯 PNG 전체 저장</button>
+      </div>
+      <div class="btns">
+        <button id="save">설정 저장</button>
+        <button id="load">설정 불러오기</button>
+        <button id="reset">초기화</button>
+      </div>
+      <p class="hint">설정은 이 브라우저에만 저장됩니다(이미지 파일은 제외).</p>
+    </fieldset>
+  </aside>
+
+  <!-- ══ 우측: 미리보기 ══════════════════════════ -->
+  <main class="stage">
+    <h2>상단 타이틀</h2>
+    <p class="stage-sub">블로그 관리 → 꾸미기 설정 → 타이틀에 등록합니다.</p>
+    <div class="preview" id="titleWrap"></div>
+
+    <h2>메뉴 위젯</h2>
+    <p class="stage-sub">각 조각을 위젯 1개로 등록합니다. 조각마다 링크가 따로 걸립니다.</p>
+    <div class="preview"><div id="widgetStrip"></div></div>
+
+    <h2>위젯 등록 코드</h2>
+    <p class="stage-sub">아래 코드를 위젯직접등록 창에 하나씩 붙여넣습니다.</p>
+    <div class="preview">
+      <textarea id="code" readonly></textarea>
+      <div class="btns"><button class="primary" id="copyCode">코드 복사</button></div>
+    </div>
+
+    <details>
+      <summary>네이버 블로그에 올리는 순서</summary>
+      <ol>
+        <li><b>이미지 저장</b> — 위에서 「타이틀 PNG 저장」과 「위젯 PNG 전체 저장」을 눌러 이미지를 모두 받습니다.</li>
+        <li><b>타이틀 등록</b> — 관리 → 꾸미기 설정 → 스킨 선택·디자인 설정에서 타이틀 영역에 타이틀 이미지를 올립니다.</li>
+        <li><b>위젯 이미지 주소 확보</b> — 위젯 PNG들을 <b>비공개 글</b>에 첨부해 발행한 뒤, 각 이미지에서 마우스 오른쪽 → 이미지 주소 복사. 외부 호스팅은 나중에 끊길 수 있어 이 방법이 안전합니다.</li>
+        <li><b>주소 입력</b> — 왼쪽 각 메뉴의 「이미지 주소」 칸에 붙여넣으면 아래 코드가 자동으로 완성됩니다.</li>
+        <li><b>위젯 등록</b> — 관리 → 꾸미기 설정 → 디자인 설정 → 레이아웃·위젯 설정 → 위젯직접등록. 메뉴 개수만큼 위젯을 만들고 코드를 각각 붙여넣습니다.</li>
+        <li><b>배치</b> — 레이아웃 화면에서 위젯을 원하는 순서로 끌어다 놓고 저장합니다.</li>
+      </ol>
+      <div class="note">보유하신 「PPT 사용설명서」·「위젯등록방법 PDF」에 스킨별 세부 설정(레이아웃 폭, 여백 제거 등)이 더 자세히 나와 있습니다. 값이 다르면 그 문서를 우선하세요.</div>
+    </details>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ── 창체넷 색상 토큰 (ccn-rule) ───────────────── */
+var THEMES = {
+  green:{ main:"#40b65a", mid:"#c1dfac", light:"#e6f0cb", on:"#ffffff" },
+  blue :{ main:"#386fb7", mid:"#c7eafb", light:"#eff9fe", on:"#ffffff" },
+  amber:{ main:"#fed060", mid:"#ffefc5", light:"#fffde9", on:"#412402" }
+};
+var N1="#2a2a2d", N3="#5f5f5f", N5="#cccccc";
+var FONT = '"Pretendard","Noto Sans KR","맑은 고딕","Malgun Gothic",sans-serif';
+var SCALE = 2;   // 2배 해상도로 그려 선명하게 내보낸다
+
+var state = {
+  theme:"green", title:"", slogan:"", subline:"", align:"left",
+  tw:966, th:300, ww:170, wh:90, dim:35, wstyle:"fill",
+  logo:null, bg:null,
+  items:[
+    {name:"환경교육",  en:"ENVIRONMENT", link:"", img:""},
+    {name:"해양교육",  en:"OCEAN",       link:"", img:""},
+    {name:"교재·교구", en:"CONTENTS",    link:"", img:""},
+    {name:"프로그램",  en:"PROGRAM",     link:"", img:""},
+    {name:"문의하기",  en:"CONTACT",     link:"", img:""}
+  ]
+};
+
+var $ = function(id){ return document.getElementById(id); };
+
+/* ── 캔버스 헬퍼 ──────────────────────────────── */
+function roundRect(c,x,y,w,h,r){
+  r = Math.min(r, w/2, h/2);
+  c.beginPath();
+  c.moveTo(x+r,y);
+  c.arcTo(x+w,y,x+w,y+h,r);
+  c.arcTo(x+w,y+h,x,y+h,r);
+  c.arcTo(x,y+h,x,y,r);
+  c.arcTo(x,y,x+w,y,r);
+  c.closePath();
+}
+/* 글자가 폭을 넘으면 크기를 줄여 맞춘다 */
+function fitFont(c, text, weight, size, maxW){
+  var s = size;
+  while(s > 8){
+    c.font = weight + " " + s + "px " + FONT;
+    if(c.measureText(text).width <= maxW) break;
+    s -= 1;
+  }
+  return s;
+}
+/* 이미지를 영역에 꽉 차게(cover) 그린다 */
+function drawCover(c, img, x, y, w, h){
+  var ir = img.width/img.height, br = w/h, sw, sh, sx, sy;
+  if(ir > br){ sh = img.height; sw = sh*br; sx = (img.width-sw)/2; sy = 0; }
+  else       { sw = img.width;  sh = sw/br; sx = 0; sy = (img.height-sh)/2; }
+  c.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+}
+function newCanvas(w,h){
+  var cv = document.createElement("canvas");
+  cv.width = w*SCALE; cv.height = h*SCALE;
+  cv.style.width = w+"px"; cv.style.height = h+"px";
+  var c = cv.getContext("2d");
+  c.scale(SCALE,SCALE);
+  c.textBaseline = "alphabetic";
+  return {cv:cv, c:c};
+}
+
+/* ── 타이틀 그리기 ────────────────────────────── */
+function drawTitle(){
+  var t = THEMES[state.theme], w = state.tw, h = state.th;
+  var o = newCanvas(w,h), c = o.c;
+  var onImage = !!state.bg;
+
+  if(onImage){
+    drawCover(c, state.bg, 0, 0, w, h);
+    c.fillStyle = "rgba(0,0,0," + (state.dim/100) + ")";
+    c.fillRect(0,0,w,h);
+  }else{
+    c.fillStyle = t.light; c.fillRect(0,0,w,h);
+    c.fillStyle = t.mid;   c.fillRect(0, h-10, w, 10);   // 하단 띠
+  }
+
+  var pad = Math.round(w*0.06);
+  var centered = state.align === "center";
+  var cx = centered ? w/2 : pad;
+  var maxW = centered ? w - pad*2 : w - pad*2;
+
+  var cTitle = onImage ? "#ffffff" : N1;
+  var cSub   = onImage ? "rgba(255,255,255,.88)" : N3;
+
+  /* 로고 */
+  var logoH = 0;
+  if(state.logo){
+    logoH = Math.round(h*0.20);
+    var lw = state.logo.width * (logoH/state.logo.height);
+    if(lw > maxW){ lw = maxW; logoH = state.logo.height * (lw/state.logo.width); }
+    c.drawImage(state.logo, centered ? (w-lw)/2 : pad, Math.round(h*0.16), lw, logoH);
+    logoH += Math.round(h*0.05);
+  }
+
+  /* 블록 전체를 세로 가운데로 */
+  var titleSize = Math.round(h*0.17);
+  var slogSize  = Math.round(h*0.062);
+  var subSize   = Math.round(h*0.046);
+  var blockH = logoH + titleSize + (state.slogan?slogSize+18:0) + (state.subline?subSize+12:0) + 26;
+  var y = Math.round((h - blockH)/2) + logoH + titleSize;
+
+  if(state.title){
+    var ts = fitFont(c, state.title, "700", titleSize, maxW);
+    c.font = "700 " + ts + "px " + FONT;
+    c.fillStyle = cTitle;
+    c.textAlign = centered ? "center" : "left";
+    c.fillText(state.title, cx, y);
+    y += 18;
+  }
+
+  /* hairline */
+  if(state.slogan || state.subline){
+    var lineW = centered ? Math.min(maxW, 220) : Math.min(maxW, 260);
+    c.strokeStyle = onImage ? "rgba(255,255,255,.5)" : N5;
+    c.lineWidth = 1;
+    c.beginPath();
+    c.moveTo(centered ? cx-lineW/2 : cx, y+0.5);
+    c.lineTo(centered ? cx+lineW/2 : cx+lineW, y+0.5);
+    c.stroke();
+    y += 8;
+  }
+
+  if(state.slogan){
+    y += slogSize;
+    var ss = fitFont(c, state.slogan, "600", slogSize, maxW);
+    c.font = "600 " + ss + "px " + FONT;
+    c.fillStyle = cTitle;
+    c.fillText(state.slogan, cx, y);
+    y += 10;
+  }
+  if(state.subline){
+    y += subSize;
+    var bs = fitFont(c, state.subline, "400", subSize, maxW);
+    c.font = "400 " + bs + "px " + FONT;
+    c.fillStyle = cSub;
+    c.fillText(state.subline, cx, y);
+  }
+  return o.cv;
+}
+
+/* ── 위젯 1개 그리기 ──────────────────────────── */
+function drawWidget(item){
+  var t = THEMES[state.theme], w = state.ww, h = state.wh;
+  var o = newCanvas(w,h), c = o.c;
+  var fill = state.wstyle === "fill";
+
+  if(fill){
+    c.fillStyle = t.main;
+    roundRect(c, 0, 0, w, h, 8); c.fill();
+  }else{
+    c.fillStyle = "#ffffff";
+    roundRect(c, 0.5, 0.5, w-1, h-1, 8); c.fill();
+    c.strokeStyle = N5; c.lineWidth = 1; c.stroke();
+    c.fillStyle = t.main;                       // 상단 포인트 선
+    roundRect(c, w*0.5-16, 12, 32, 3, 2); c.fill();
+  }
+
+  var cName = fill ? t.on : N1;
+  var cEn   = fill ? (state.theme==="amber" ? "rgba(65,36,2,.68)" : "rgba(255,255,255,.72)") : N3;
+  var maxW = w - 16;
+  var hasEn = !!item.en;
+
+  c.textAlign = "center";
+  var nameSize = Math.round(h*0.24);
+  var ns = fitFont(c, item.name || "메뉴", "700", nameSize, maxW);
+  c.font = "700 " + ns + "px " + FONT;
+  c.fillStyle = cName;
+  c.fillText(item.name || "메뉴", w/2, hasEn ? h/2 + ns*0.18 : h/2 + ns*0.36);
+
+  if(hasEn){
+    var enSize = Math.max(8, Math.round(h*0.11));
+    var es = fitFont(c, item.en, "500", enSize, maxW);
+    c.font = "500 " + es + "px " + FONT;
+    c.fillStyle = cEn;
+    c.fillText(item.en, w/2, h/2 + ns*0.18 + es + 8);
+  }
+  return o.cv;
+}
+
+/* ── 화면 갱신 ────────────────────────────────── */
+function render(){
+  document.documentElement.style.setProperty("--main", THEMES[state.theme].main);
+
+  var tw = $("titleWrap");
+  tw.innerHTML = "";
+  tw.appendChild(drawTitle());
+
+  var strip = $("widgetStrip");
+  strip.innerHTML = "";
+  state.items.forEach(function(it, i){
+    var cell = document.createElement("div");
+    cell.className = "wcell";
+    cell.appendChild(drawWidget(it));
+    var cap = document.createElement("div");
+    cap.className = "cap";
+    cap.textContent = "위젯 " + (i+1);
+    cell.appendChild(cap);
+    strip.appendChild(cell);
+  });
+
+  $("code").value = buildCode();
+}
+
+/* ── 위젯 등록 코드 ───────────────────────────── */
+function buildCode(){
+  var lines = [];
+  state.items.forEach(function(it, i){
+    var img  = it.img  || "여기에_이미지주소_붙여넣기_" + (i+1);
+    var link = it.link || "https://blog.naver.com/아이디/카테고리주소";
+    var alt  = (it.name || "메뉴").replace(/"/g, "");
+    lines.push("<!-- 위젯 " + (i+1) + " : " + alt + " -->");
+    lines.push('<div style="width:' + state.ww + 'px;height:' + state.wh + 'px;overflow:hidden;">');
+    lines.push('  <a href="' + link + '" target="_self">');
+    lines.push('    <img src="' + img + '" width="' + state.ww + '" height="' + state.wh +
+               '" border="0" alt="' + alt + '" style="display:block;">');
+    lines.push("  </a>");
+    lines.push("</div>");
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+
+/* ── 메뉴 항목 UI ─────────────────────────────── */
+function renderItems(){
+  var box = $("items");
+  box.innerHTML = "";
+  state.items.forEach(function(it, i){
+    var d = document.createElement("div");
+    d.className = "item";
+    d.innerHTML =
+      '<div class="item-head"><span class="item-no">메뉴 ' + (i+1) + '</span>' +
+      '<span class="item-tools">' +
+      '<button class="mini" data-act="up" data-i="' + i + '">↑</button>' +
+      '<button class="mini" data-act="down" data-i="' + i + '">↓</button>' +
+      '<button class="mini" data-act="del" data-i="' + i + '">삭제</button>' +
+      '</span></div>' +
+      '<div class="row">' +
+        '<div><label>이름</label><input type="text" data-f="name" data-i="' + i + '" value="' + esc(it.name) + '"></div>' +
+        '<div><label>영문 (선택)</label><input type="text" data-f="en" data-i="' + i + '" value="' + esc(it.en) + '"></div>' +
+      '</div>' +
+      '<label>연결 링크</label><input type="text" data-f="link" data-i="' + i + '" value="' + esc(it.link) + '" placeholder="https://blog.naver.com/아이디/...">' +
+      '<label>이미지 주소 (등록 후 입력)</label><input type="text" data-f="img" data-i="' + i + '" value="' + esc(it.img) + '" placeholder="네이버 이미지 주소">';
+    box.appendChild(d);
+  });
+}
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
+
+$("items").addEventListener("input", function(e){
+  var f = e.target.getAttribute("data-f");
+  if(!f) return;
+  state.items[+e.target.getAttribute("data-i")][f] = e.target.value;
+  render();
+});
+$("items").addEventListener("click", function(e){
+  var act = e.target.getAttribute("data-act");
+  if(!act) return;
+  var i = +e.target.getAttribute("data-i");
+  if(act === "del"){
+    if(state.items.length <= 1){ toast("메뉴는 최소 1개가 필요합니다"); return; }
+    state.items.splice(i,1);
+  }
+  if(act === "up"   && i > 0)                    state.items.splice(i-1, 0, state.items.splice(i,1)[0]);
+  if(act === "down" && i < state.items.length-1) state.items.splice(i+1, 0, state.items.splice(i,1)[0]);
+  renderItems(); render();
+});
+$("addItem").addEventListener("click", function(){
+  state.items.push({name:"새 메뉴", en:"", link:"", img:""});
+  renderItems(); render();
+});
+
+/* ── 입력 연결 ────────────────────────────────── */
+function bind(id, key, isNum){
+  $(id).addEventListener("input", function(){
+    state[key] = isNum ? (+this.value || 0) : this.value;
+    if(id === "dim") $("dimVal").textContent = this.value;
+    render();
+  });
+}
+["theme","title","slogan","subline","align","wstyle"].forEach(function(k){ bind(k,k,false); });
+["tw","th","ww","wh","dim"].forEach(function(k){ bind(k,k,true); });
+
+function loadImage(input, key){
+  $(input).addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    if(!f) return;
+    var r = new FileReader();
+    r.onload = function(ev){
+      var im = new Image();
+      im.onload = function(){ state[key] = im; render(); };
+      im.src = ev.target.result;
+    };
+    r.readAsDataURL(f);
+  });
+}
+loadImage("logoFile","logo");
+loadImage("bgFile","bg");
+$("logoClear").addEventListener("click", function(){ state.logo=null; $("logoFile").value=""; render(); });
+$("bgClear").addEventListener("click",   function(){ state.bg=null;   $("bgFile").value="";   render(); });
+
+/* ── 내보내기 ─────────────────────────────────── */
+function download(canvas, filename){
+  canvas.toBlob(function(blob){
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }, "image/png");
+}
+$("dlTitle").addEventListener("click", function(){
+  download(drawTitle(), "창체넷_대문_타이틀.png");
+  toast("타이틀 이미지를 저장했습니다");
+});
+$("dlWidgets").addEventListener("click", function(){
+  state.items.forEach(function(it, i){
+    setTimeout(function(){
+      var safe = (it.name || ("메뉴"+(i+1))).replace(/[\\/:*?"<>|]/g, "");
+      download(drawWidget(it), "창체넷_위젯" + (i+1) + "_" + safe + ".png");
+    }, i * 350);
+  });
+  toast("위젯 " + state.items.length + "개를 저장합니다");
+});
+$("copyCode").addEventListener("click", function(){
+  var ta = $("code");
+  ta.select(); ta.setSelectionRange(0, 999999);
+  try{ document.execCommand("copy"); toast("코드를 복사했습니다"); }
+  catch(e){ toast("복사에 실패했습니다 — 직접 선택해 주세요"); }
+});
+
+/* ── 설정 저장 / 불러오기 ─────────────────────── */
+var KEY = "ccn-blog-cover-v1";
+function snapshot(){
+  var s = {};
+  ["theme","title","slogan","subline","align","tw","th","ww","wh","dim","wstyle"].forEach(function(k){ s[k]=state[k]; });
+  s.items = state.items;
+  return s;
+}
+$("save").addEventListener("click", function(){
+  try{ localStorage.setItem(KEY, JSON.stringify(snapshot())); toast("설정을 저장했습니다"); }
+  catch(e){ toast("저장할 수 없습니다"); }
+});
+$("load").addEventListener("click", function(){
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(!raw){ toast("저장된 설정이 없습니다"); return; }
+    apply(JSON.parse(raw)); toast("설정을 불러왔습니다");
+  }catch(e){ toast("불러오기에 실패했습니다"); }
+});
+$("reset").addEventListener("click", function(){
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  location.reload();
+});
+function apply(s){
+  Object.keys(s).forEach(function(k){ state[k] = s[k]; });
+  ["theme","title","slogan","subline","align","wstyle","tw","th","ww","wh","dim"].forEach(function(k){
+    if($(k)) $(k).value = state[k];
+  });
+  $("dimVal").textContent = state.dim;
+  renderItems(); render();
+}
+
+/* ── 토스트 ───────────────────────────────────── */
+var toastTimer;
+function toast(msg){
+  var el = $("toast");
+  el.textContent = msg; el.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove("on"); }, 2200);
+}
+
+/* ── 시작 ─────────────────────────────────────── */
+["theme","title","slogan","subline","align","wstyle","tw","th","ww","wh","dim"].forEach(function(k){
+  state[k] = ($(k).type === "number") ? +$(k).value : $(k).value;
+});
+try{
+  var saved = localStorage.getItem(KEY);
+  if(saved){ apply(JSON.parse(saved)); }
+  else { renderItems(); render(); }
+}catch(e){ renderItems(); render(); }
+</script>
+</body>
+</html>
