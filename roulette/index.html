@@ -315,16 +315,17 @@ const DEFAULT_MISSIONS = [
   {tier:'common', text:'오른쪽 사람과 러브샷', sub:'팔짱 끼고 건배 🍻'},
   {tier:'common', text:'왼쪽 사람과 러브샷', sub:'팔짱 끼고 건배 🍻'},
   {tier:'common', text:'경제포럼 만세삼창', sub:'"충북경제포럼 만세! 만세! 만세!" 크게 🙌'},
+  {tier:'rare',   text:'폭탄주 독박', sub:'폭탄주 한 잔, 혼자 원샷 💣🍺'},
   {tier:'legend', text:'대타 지목권', sub:'원하는 사람을 지목해 대신 미션 룰렛을 돌리게 합니다'},
 ];
-const KEY='cb-roulette-v3';
+const KEY='cb-roulette-v4';
 function load(){
   try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.names) return s; }catch(e){}
   return fresh();
 }
 function fresh(){
   return { names:DEFAULT_NAMES.map(n=>({name:n,weight:BOOST.has(n)?2:1,count:0})), missions:DEFAULT_MISSIONS.map(m=>({...m})),
-    prob:{common:95,rare:0,legend:5}, decay:3, maxPicks:3, time:30, round:0, log:[], muted:false };
+    prob:{common:70,rare:25,legend:5}, decay:3, maxPicks:3, time:30, round:0, log:[], muted:false };
 }
 function save(){ localStorage.setItem(KEY,JSON.stringify(S)); }
 let S = load();
