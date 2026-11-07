@@ -29,7 +29,8 @@ body.mood-legend #bg{filter:sepia(.7) saturate(2) brightness(1.15)}
 #moon{position:absolute;top:8%;right:12%;width:9vmin;height:9vmin;border-radius:50%;
   background:#fff6c8;box-shadow:0 0 60px 20px rgba(255,240,180,.35)}
 #moon:after{content:"";position:absolute;left:-18%;top:-10%;width:85%;height:85%;border-radius:50%;background:#2b4bc4}
-#skyline{position:absolute;bottom:0;left:0;width:100%;height:62%;}
+#skyline{position:absolute;bottom:0;left:0;width:100%;height:62%;opacity:.75}
+#bg:after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(5,15,70,.55) 0%,rgba(5,15,70,.25) 60%,rgba(5,15,70,0) 100%);pointer-events:none}
 #skyline svg{width:100%;height:100%;display:block}
 .palm{position:absolute;bottom:-2%;width:26vmin;height:40vmin;transform-origin:50% 100%;
   animation:sway 6s ease-in-out infinite}
@@ -51,7 +52,7 @@ body.mood-legend #bg{filter:sepia(.7) saturate(2) brightness(1.15)}
 @keyframes fadein{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
 h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;line-height:1.05;
   text-shadow:0 4px 0 var(--red2),0 10px 40px rgba(0,0,0,.6)}
-.sub{font-size:4vmin;color:#dfe6ff;margin:2vmin 0 5vmin;font-weight:500}
+.sub{font-size:4vmin;color:#fff;margin:2vmin 0 5vmin;font-weight:700;text-shadow:0 .3vmin 1vmin rgba(0,0,0,.9),0 0 2vmin rgba(0,0,0,.8)}
 .badge{display:inline-block;background:var(--red);color:#fff;font-weight:800;font-size:3.2vmin;
   padding:.6vmin 3vmin;border-radius:99px;letter-spacing:.1em;margin-bottom:2vmin}
 .btn{background:linear-gradient(180deg,var(--yellow),var(--yellow2));color:#1a1a1a;font-weight:900;
@@ -102,18 +103,18 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
 .glass{font-size:28vmin;line-height:1;animation:shake 1s ease-in-out infinite}
 @keyframes shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
 .count{font-size:30vmin;font-weight:900;color:var(--yellow);line-height:1;text-shadow:0 1vmin 0 var(--red2)}
-.big{font-size:16vmin;font-weight:900;color:#fff;line-height:1.1;text-shadow:0 .8vmin 0 var(--red2),0 0 6vmin rgba(212,33,61,.7)}
+.big{font-size:16vmin;font-weight:900;color:#fff;line-height:1.1;background:rgba(0,10,60,.6);padding:1vmin 4vmin;border-radius:2vmin;text-shadow:0 .8vmin 0 var(--red2),0 0 6vmin rgba(212,33,61,.7)}
 
 /* 미션 */
 .tier{display:inline-block;font-weight:900;font-size:4vmin;padding:1vmin 4vmin;border-radius:99px;margin-bottom:2vmin;letter-spacing:.15em}
 .tier.common{background:var(--silver);color:#1a1a1a}
 .tier.rare{background:var(--purple);color:#fff;box-shadow:0 0 4vmin var(--purple)}
 .tier.legend{background:linear-gradient(90deg,#ffd200,#ff8c00);color:#1a1a1a;box-shadow:0 0 6vmin #ffb300}
-.mission{font-size:min(11vmin,13vw);font-weight:900;line-height:1.15;color:#fff;max-width:92vw;word-break:keep-all;background:rgba(0,10,60,.5);padding:1.5vmin 3vmin;border-radius:2vmin;
+.mission{font-size:min(11vmin,13vw);font-weight:900;line-height:1.15;color:#fff;max-width:92vw;word-break:keep-all;background:rgba(0,10,60,.75);border:.4vmin solid rgba(255,255,255,.25);padding:1.5vmin 3vmin;border-radius:2vmin;
   text-shadow:0 .6vmin 0 rgba(0,0,0,.6)}
 .mission.legend{color:var(--yellow);text-shadow:0 0 5vmin #ffb300,0 .6vmin 0 var(--red2)}
 .mission.rare{color:#e4d2ff;text-shadow:0 0 5vmin var(--purple)}
-.detail{font-size:5vmin;color:#ffe9a8;margin-top:2.5vmin;font-weight:700;background:rgba(0,10,60,.45);padding:1vmin 3vmin;border-radius:1.5vmin;max-width:90vw;word-break:keep-all;line-height:1.4}
+.detail{font-size:5vmin;color:#ffe9a8;margin-top:2.5vmin;font-weight:700;background:rgba(0,10,60,.7);padding:1vmin 3vmin;border-radius:1.5vmin;max-width:90vw;word-break:keep-all;line-height:1.4}
 .detail b{color:var(--yellow);font-size:8vmin}
 .timer{font-size:22vmin;font-weight:900;line-height:1;color:var(--yellow);font-variant-numeric:tabular-nums;
   text-shadow:0 .8vmin 0 var(--red2);margin:1vmin 0}
@@ -146,7 +147,7 @@ body.viewer .hostonly,body.viewer .btn,body.viewer #gear,body.viewer .hint,body.
 body.viewer .vieweronly{display:block}
 #joinOverlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,20,80,.92);flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer}
 body.viewer #joinOverlay{display:flex}
-@media (max-aspect-ratio:1/1){ .wheelwrap{width:92vw;height:92vw} #s-name .wheelwrap{width:88vw;height:88vw} .live{font-size:11vw} }
+@media (max-aspect-ratio:1/1){ #skyline{opacity:.45} .wheelwrap{width:92vw;height:92vw} #s-name .wheelwrap{width:88vw;height:88vw} .live{font-size:11vw} }
 </style>
 </head>
 <body class="mood-wait">
@@ -158,8 +159,8 @@ body.viewer #joinOverlay{display:flex}
     <svg viewBox="0 0 1600 600" preserveAspectRatio="xMidYMax slice">
       <defs>
         <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b5bd6"/><stop offset="1" stop-color="#152a7a"/></linearGradient>
-        <linearGradient id="gt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfd9ff"/><stop offset="1" stop-color="#5a74e0"/></linearGradient>
-        <pattern id="win" width="14" height="18" patternUnits="userSpaceOnUse"><rect x="3" y="3" width="6" height="8" fill="#ffd27a" opacity=".55"/></pattern>
+        <linearGradient id="gt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7f94e8"/><stop offset="1" stop-color="#3350c0"/></linearGradient>
+        <pattern id="win" width="14" height="18" patternUnits="userSpaceOnUse"><rect x="3" y="3" width="6" height="8" fill="#ffd27a" opacity=".35"/></pattern>
       </defs>
       <!-- 도시 glow -->
       <ellipse cx="800" cy="600" rx="900" ry="220" fill="#ff8ab0" opacity=".35"/>
