@@ -312,14 +312,13 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
 const DEFAULT_NAMES = `이재진 신호태 차태환 김민호 오석송 이상찬 김용겸 김강용 이태희 여명구 최상천 연규진 이종석 이동덕 류재형 방현복 이태근 이인선 한연수 정초시 연경환 오세동 이윤정 김홍숙 김선영 조아해 백성혜 김양희 홍현정 박선희 최윤영 양은희 안순화 최인숙 임일수`.split(/\s+/);
 const BOOST = new Set(['차태환','이재진','이상찬','최상천','김강용','조아해','김선영','연규진','양은희','오세동','연경환']); // 가중치 2배
 const DEFAULT_MISSIONS = [
-  {tier:'common', text:'앞 사람 칭찬 3가지', sub:'칭찬 대상은 룰렛이 지목합니다 · 30초 안에 3가지!'},
-  {tier:'common', text:'옆 사람과 러브샷', sub:'팔짱 끼고 건배 🍻'},
-  {tier:'common', text:'지목해서 원샷 시키기', sub:'한 명을 지목하면 그 사람이 원샷!'},
-  {tier:'rare',   text:'노래 한 소절', sub:'마이크 ON 🎤 (최소 한 소절)'},
+  {tier:'common', text:'오른쪽 사람과 러브샷', sub:'팔짱 끼고 건배 🍻'},
+  {tier:'common', text:'왼쪽 사람과 러브샷', sub:'팔짱 끼고 건배 🍻'},
+  {tier:'common', text:'경제포럼 만세삼창', sub:'"충북경제포럼 만세! 만세! 만세!" 크게 🙌'},
   {tier:'rare',   text:'성씨 건배 미션', sub:'같은 성씨 3명을 찾아 10초 안에 건배! 실패 시 벌칙: "난 좀 이뻐~" 포즈'},
   {tier:'legend', text:'대타 지목권', sub:'원하는 사람을 지목해 대신 미션 룰렛을 돌리게 합니다'},
 ];
-const KEY='cb-roulette-v1';
+const KEY='cb-roulette-v2';
 function load(){
   try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.names) return s; }catch(e){}
   return fresh();
