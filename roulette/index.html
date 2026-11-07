@@ -78,8 +78,9 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
   display:flex;align-items:center;justify-content:center;font-weight:900;color:#1a1a1a;font-size:min(5vh,6vw)}
 .live{font-size:11vmin;font-weight:900;color:var(--yellow);line-height:1;min-height:12vmin;margin-bottom:4vmin;
   text-shadow:0 0 3vmin rgba(255,210,0,.6),0 .6vmin 0 var(--red2);letter-spacing:-.02em}
-.live.small{font-size:10vmin;min-height:0;margin-bottom:5vmin}
-#s-mroulette .wheelwrap{width:min(52vh,88vw);height:min(52vh,88vw)}
+.live.small{font-size:12vmin;line-height:1.1;min-height:0;margin-bottom:3vmin}
+#s-mroulette .wheelwrap{width:min(44vh,88vw);height:min(44vh,88vw)}
+#s-mroulette .badge{display:none}
 #s-name .wheelwrap{width:min(54vh,88vw);height:min(54vh,88vw)}
 .wheelwrap{width:min(58vh,88vw);height:min(58vh,88vw)}
 
@@ -240,7 +241,7 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
 <!-- S4 미션 룰렛 -->
 <section class="screen" id="s-mroulette">
   <div class="badge">MISSION ROULETTE</div>
-  <div class="live small" id="liveMission"><span id="mWho"></span>님, 직접 돌리세요!</div>
+  <div class="live small" id="liveMission"><span id="mWho"></span>님<br>미션 룰렛 돌려주세요!</div>
   <div class="wheelwrap"><div class="pointer"></div><canvas id="missionWheel"></canvas><div class="hub">GO</div></div>
   <div class="row"><button class="btn" id="mspinBtn" onclick="spinMission()">미션 룰렛 돌리기</button></div>
 </section>
