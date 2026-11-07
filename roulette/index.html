@@ -78,21 +78,24 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
   display:flex;align-items:center;justify-content:center;font-weight:900;color:#1a1a1a;font-size:min(5vh,6vw)}
 .live{font-size:11vmin;font-weight:900;color:var(--yellow);line-height:1;min-height:12vmin;margin-bottom:4vmin;
   text-shadow:0 0 3vmin rgba(255,210,0,.6),0 .6vmin 0 var(--red2);letter-spacing:-.02em}
-.live.small{font-size:6.5vmin;min-height:0;margin-bottom:5vmin}
+.live.small{font-size:10vmin;min-height:0;margin-bottom:5vmin}
+#s-mroulette .wheelwrap{width:min(52vh,88vw);height:min(52vh,88vw)}
 #s-name .wheelwrap{width:min(54vh,88vw);height:min(54vh,88vw)}
 .wheelwrap{width:min(58vh,88vw);height:min(58vh,88vw)}
 
 /* 당첨 화면 (사진 참고 레이아웃) */
-.medal{width:18vmin;height:18vmin;border-radius:50%;background:radial-gradient(#1c2c6b,#0b1a4a);
+.medal{width:14vmin;height:14vmin;border-radius:50%;background:radial-gradient(#1c2c6b,#0b1a4a);
   border:.6vmin solid var(--yellow);display:flex;align-items:center;justify-content:center;font-size:10vmin;
   box-shadow:0 0 5vmin rgba(255,210,0,.4);margin-bottom:3vmin;animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .congrats{font-size:6.5vmin;font-weight:900;color:var(--yellow);letter-spacing:.04em;text-shadow:0 .4vmin 0 var(--red2)}
-.namebox{margin:3vmin 0;padding:3vmin 8vmin;border:.7vmin solid var(--yellow);border-radius:2.5vmin;
+.namebox{margin:2vmin 0;padding:2vmin 7vmin;border:.7vmin solid var(--yellow);border-radius:2.5vmin;
   background:rgba(0,0,0,.45);box-shadow:0 0 6vmin rgba(255,210,0,.45),inset 0 0 4vmin rgba(255,210,0,.15);
-  font-size:min(20vmin,22vw);font-weight:900;color:var(--yellow);line-height:1;letter-spacing:.02em;
+  font-size:min(30vmin,30vw);font-weight:900;color:var(--yellow);line-height:1;letter-spacing:.02em;
   text-shadow:0 .8vmin 0 var(--red2);animation:pop .7s cubic-bezier(.2,1.6,.4,1) .15s both;max-width:95vw;word-break:keep-all}
-.namebox.long{font-size:min(14vmin,16vw)}
+.namebox.long{font-size:min(20vmin,22vw)}
+#s-win .sub{margin:.5vmin 0}
+#s-win .row{margin-top:1vmin}
 
 /* 원샷 */
 .glass{font-size:28vmin;line-height:1;animation:shake 1s ease-in-out infinite}
@@ -406,7 +409,7 @@ function makeWheel(canvas, items){
       g.strokeStyle='rgba(255,255,255,.25)'; g.lineWidth=1; g.stroke();
       // 텍스트
       g.save(); g.translate(cx,cy); let mid=start+sweep/2; const flip=Math.cos(mid)<0; g.rotate(mid+(flip?Math.PI:0)); g.textAlign=flip?'left':'right'; g.textBaseline='middle';
-      const fs=Math.min(sweep*R*0.55, R*0.09, (R*0.62)/Math.max(1,it.label.length)*1.6);
+      const fs=Math.min(sweep*R*0.55, R*0.11, (R*0.72)/Math.max(1,it.label.length)*1.9);
       g.font=`900 ${Math.max(9,fs)}px "Noto Sans KR","Malgun Gothic",sans-serif`;
       g.fillStyle=it.textColor||'#ffd200'; g.shadowColor='rgba(0,0,0,.6)'; g.shadowBlur=4;
       g.fillText(it.label, flip?-R*0.93:R*0.93, 0); g.restore();
