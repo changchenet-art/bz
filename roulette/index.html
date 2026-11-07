@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>운명의 룰렛 · 충북경제포럼 말레이시아 연수</title>
+<title>너야 너 · 2026 경제포럼 연수</title>
 <style>
 :root{
-  --navy:#0b1a4a; --navy2:#071235; --red:#d4213d; --red2:#a3122b;
+  --navy:#1a3aa0; --navy2:#12256e; --red:#d4213d; --red2:#a3122b;
   --yellow:#ffd200; --yellow2:#ffb300; --white:#fff;
   --purple:#9b5cff; --silver:#cfd8e6;
 }
@@ -17,7 +17,7 @@ button{font-family:inherit;cursor:pointer;border:none}
 
 /* ===== 배경 ===== */
 #bg{position:fixed;inset:0;z-index:0;overflow:hidden;
-  background:radial-gradient(ellipse at 50% 110%,#2a2170 0%,#0b1a4a 45%,#040a24 100%);
+  background:radial-gradient(ellipse at 50% 110%,#7a5cff 0%,#2b4bc4 40%,#12256e 100%);
   transition:filter 1.2s}
 body.mood-shot #bg{filter:hue-rotate(-35deg) saturate(1.6) brightness(.9)}
 body.mood-mission #bg{filter:sepia(.35) saturate(1.5) brightness(1.05)}
@@ -28,7 +28,7 @@ body.mood-legend #bg{filter:sepia(.7) saturate(2) brightness(1.15)}
 @keyframes twinkle{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:.9;transform:scale(1.3)}}
 #moon{position:absolute;top:8%;right:12%;width:9vmin;height:9vmin;border-radius:50%;
   background:#fff6c8;box-shadow:0 0 60px 20px rgba(255,240,180,.35)}
-#moon:after{content:"";position:absolute;left:-18%;top:-10%;width:85%;height:85%;border-radius:50%;background:#0b1a4a}
+#moon:after{content:"";position:absolute;left:-18%;top:-10%;width:85%;height:85%;border-radius:50%;background:#2b4bc4}
 #skyline{position:absolute;bottom:0;left:0;width:100%;height:62%;}
 #skyline svg{width:100%;height:100%;display:block}
 .palm{position:absolute;bottom:-2%;width:26vmin;height:40vmin;transform-origin:50% 100%;
@@ -38,7 +38,7 @@ body.mood-legend #bg{filter:sepia(.7) saturate(2) brightness(1.15)}
 .palm.r{animation-name:swayr}
 @keyframes swayr{0%,100%{transform:scaleX(-1) rotate(2deg)}50%{transform:scaleX(-1) rotate(-2.5deg)}}
 #ground{position:absolute;bottom:0;left:0;width:100%;height:6%;
-  background:linear-gradient(#071235,#02061a)}
+  background:linear-gradient(#1b3a9c,#0f2060)}
 #flash{position:fixed;inset:0;z-index:50;background:#fff;opacity:0;pointer-events:none}
 #flash.on{animation:flash .6s ease-out}
 @keyframes flash{0%{opacity:.95}100%{opacity:0}}
@@ -145,12 +145,12 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
   <div id="skyline">
     <svg viewBox="0 0 1600 600" preserveAspectRatio="xMidYMax slice">
       <defs>
-        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2c6b"/><stop offset="1" stop-color="#050b26"/></linearGradient>
-        <linearGradient id="gt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fa3ff" stop-opacity=".9"/><stop offset="1" stop-color="#2a3a8a"/></linearGradient>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b5bd6"/><stop offset="1" stop-color="#152a7a"/></linearGradient>
+        <linearGradient id="gt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfd9ff"/><stop offset="1" stop-color="#5a74e0"/></linearGradient>
         <pattern id="win" width="14" height="18" patternUnits="userSpaceOnUse"><rect x="3" y="3" width="6" height="8" fill="#ffd27a" opacity=".55"/></pattern>
       </defs>
       <!-- 도시 glow -->
-      <ellipse cx="800" cy="600" rx="900" ry="200" fill="#4a3c9a" opacity=".35"/>
+      <ellipse cx="800" cy="600" rx="900" ry="220" fill="#ff8ab0" opacity=".35"/>
       <!-- 뒤쪽 빌딩 -->
       <g fill="url(#g1)">
         <rect x="40" y="380" width="90" height="220"/><rect x="150" y="330" width="60" height="270"/>
@@ -191,8 +191,8 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
       </g>
     </svg>
   </div>
-  <svg class="palm l" viewBox="0 0 200 300"><path d="M100 300 C105 220 95 160 110 90" stroke="#0a1230" stroke-width="12" fill="none" stroke-linecap="round"/><g fill="#0d1a45"><path d="M110 90 C60 60 20 70 5 110 C40 90 80 95 110 90Z"/><path d="M110 90 C70 40 60 10 80 0 C90 40 100 70 110 90Z"/><path d="M110 90 C150 40 170 20 195 30 C170 50 140 80 110 90Z"/><path d="M110 90 C160 70 190 90 200 130 C170 110 140 100 110 90Z"/><path d="M110 90 C100 130 70 150 40 150 C70 130 95 115 110 90Z"/><path d="M110 90 C130 130 160 150 185 160 C150 150 125 125 110 90Z"/></g></svg>
-  <svg class="palm r" viewBox="0 0 200 300"><path d="M100 300 C105 220 95 160 110 90" stroke="#0a1230" stroke-width="12" fill="none" stroke-linecap="round"/><g fill="#0d1a45"><path d="M110 90 C60 60 20 70 5 110 C40 90 80 95 110 90Z"/><path d="M110 90 C70 40 60 10 80 0 C90 40 100 70 110 90Z"/><path d="M110 90 C150 40 170 20 195 30 C170 50 140 80 110 90Z"/><path d="M110 90 C160 70 190 90 200 130 C170 110 140 100 110 90Z"/><path d="M110 90 C100 130 70 150 40 150 C70 130 95 115 110 90Z"/><path d="M110 90 C130 130 160 150 185 160 C150 150 125 125 110 90Z"/></g></svg>
+  <svg class="palm l" viewBox="0 0 200 300"><path d="M100 300 C105 220 95 160 110 90" stroke="#7a4a1e" stroke-width="12" fill="none" stroke-linecap="round"/><g fill="#1d7a4a"><path d="M110 90 C60 60 20 70 5 110 C40 90 80 95 110 90Z"/><path d="M110 90 C70 40 60 10 80 0 C90 40 100 70 110 90Z"/><path d="M110 90 C150 40 170 20 195 30 C170 50 140 80 110 90Z"/><path d="M110 90 C160 70 190 90 200 130 C170 110 140 100 110 90Z"/><path d="M110 90 C100 130 70 150 40 150 C70 130 95 115 110 90Z"/><path d="M110 90 C130 130 160 150 185 160 C150 150 125 125 110 90Z"/></g></svg>
+  <svg class="palm r" viewBox="0 0 200 300"><path d="M100 300 C105 220 95 160 110 90" stroke="#7a4a1e" stroke-width="12" fill="none" stroke-linecap="round"/><g fill="#1d7a4a"><path d="M110 90 C60 60 20 70 5 110 C40 90 80 95 110 90Z"/><path d="M110 90 C70 40 60 10 80 0 C90 40 100 70 110 90Z"/><path d="M110 90 C150 40 170 20 195 30 C170 50 140 80 110 90Z"/><path d="M110 90 C160 70 190 90 200 130 C170 110 140 100 110 90Z"/><path d="M110 90 C100 130 70 150 40 150 C70 130 95 115 110 90Z"/><path d="M110 90 C130 130 160 150 185 160 C150 150 125 125 110 90Z"/></g></svg>
   <div id="ground"></div>
 </div>
 <canvas id="fw"></canvas>
@@ -200,9 +200,9 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
 
 <!-- S0 대기 -->
 <section class="screen on" id="s-title">
-  <div class="badge">충북경제포럼 말레이시아 연수</div>
-  <h1>운명의 룰렛</h1>
-  <div class="sub">🇲🇾 Roulette of Destiny in Malaysia 🇰🇷</div>
+  <div class="badge">2026 충북경제포럼 말레이시아 연수</div>
+  <h1>너야 너!</h1>
+  <div class="sub">너야 너, 너 나와 🇲🇾✈️🇰🇷</div>
   <button class="btn" onclick="startGame()">START</button>
   <div class="sub" style="font-size:2.8vmin;margin-top:4vmin;color:#9fb0ff" id="titleInfo"></div>
 </section>
@@ -218,7 +218,7 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
 <!-- S2 당첨 -->
 <section class="screen" id="s-win">
   <div class="medal">🏅</div>
-  <div class="congrats">CONGRATULATIONS!</div>
+  <div class="congrats">너야 너, 너 나와!</div>
   <div class="sub" id="winSub" style="margin:1vmin 0 0">제 1라운드 당첨자</div>
   <div class="namebox" id="winName">참가자</div>
   <div class="sub" id="winMsg">축하합니다! 행운의 당첨자로 선정되었습니다</div>
@@ -440,14 +440,14 @@ function makeWheel(canvas, items){
 }
 let nameWheel, missionWheel;
 function buildNameWheel(){
-  const items=S.names.map((p,i)=>({label:p.name,color:i%2?'#d4213d':'#0b1a4a'}));
-  if(S.names.length%2===1) items[items.length-1].color='#5b1c9a';
+  const items=S.names.map((p,i)=>({label:p.name,color:i%2?'#e8334f':'#1e46c8'}));
+  if(S.names.length%2===1) items[items.length-1].color='#8a3fe0';
   nameWheel=makeWheel(document.getElementById('nameWheel'),items); nameWheel.draw();
 }
 function buildMissionWheel(){
   const tp=S.prob, byTier={common:[],rare:[],legend:[]}; S.missions.forEach((m,i)=>byTier[m.tier]?.push(i));
   const items=S.missions.map((m,i)=>{ const cnt=byTier[m.tier].length, span=(tp[m.tier]||0)/cnt;
-    const col={common:(byTier.common.indexOf(i)%2?'#1c2c6b':'#0b1a4a'),rare:'#6a2fc9',legend:'#d4a200'}[m.tier];
+    const col={common:(byTier.common.indexOf(i)%2?'#2d5ae8':'#1e46c8'),rare:'#6a2fc9',legend:'#d4a200'}[m.tier];
     return {label:m.text,span:Math.max(span,0.5),color:col,textColor:m.tier==='legend'?'#1a1a1a':(m.tier==='rare'?'#fff':'#ffd200')}; });
   missionWheel=makeWheel(document.getElementById('missionWheel'),items); missionWheel.draw();
 }
@@ -459,7 +459,7 @@ function startGame(){ ac(); SFX.whoosh(); nextRound(); }
 function nextRound(){
   clearInterval(timerId); S.round++; save(); mood('wait');
   document.getElementById('roundBadge').textContent='ROUND '+S.round+(S.round===1?' · 원샷':' · 미션');
-  document.getElementById('liveName').textContent='누가 걸릴까?'; document.getElementById('spinBtn').disabled=false;
+  document.getElementById('liveName').textContent='너야 너… 누구?'; document.getElementById('spinBtn').disabled=false;
   buildNameWheel(); go('s-name');
 }
 function pickWeighted(ws){ const t=ws.reduce((a,b)=>a+b,0); if(t<=0) return -1; let r=Math.random()*t; for(let i=0;i<ws.length;i++){ r-=ws[i]; if(r<0) return i; } return ws.length-1; }
@@ -479,7 +479,7 @@ function showWin(){
   const nb=document.getElementById('winName'); nb.textContent=winner.name; nb.classList.toggle('long',winner.name.length>4);
   document.getElementById('winSub').textContent=`제 ${S.round}라운드 당첨자`;
   const first=S.round===1;
-  document.getElementById('winMsg').textContent= first? '첫 번째 당첨자는 원샷입니다! 🍻' : '무대로 나오세요! 직접 미션 룰렛을 돌립니다';
+  document.getElementById('winMsg').textContent= first? '첫 번째 당첨자는 원샷입니다! 🍻' : '너야 너, 너 나와! 직접 미션 룰렛을 돌립니다';
   const b=document.getElementById('winBtn'); b.textContent= first?'원샷!':'미션 룰렛으로 →'; b.className='btn '+(first?'red':'');
   S.log.push({round:S.round,name:winner.name,mission:first?'원샷(1라운드)':'',result:''}); save();
   mood(first?'shot':'mission'); go('s-win');
