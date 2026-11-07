@@ -262,7 +262,6 @@ body.viewer #joinOverlay{display:flex}
   <div class="row"><button class="btn ghost" onclick="go('s-name')">계속 진행</button><button class="btn ghost" onclick="resetAll()">전체 초기화</button></div>
 </section>
 
-<div class="hint" id="hint">Space = 돌리기 / 다음 · F = 전체화면 · A = 설정</div>
 <button id="gear" onclick="openAdmin()">설정</button>
 <button id="muteBtn" onclick="toggleMute()">소리 ON</button>
 
@@ -452,14 +451,17 @@ let isHost=true; // 진행자(조작) / 뷰어(보기 전용)
 const ARTIFACT_URL='https://claude.ai/artifact/XcoLgPAifSaLhJNwF6B5Hd';
 const SYNC={ transport:null, room:null, lastSeq:0, lastEv:null, hbTimer:null, es:null, status:'off' };
 function topic(){ return S.topic||'nuya-neo-2026-kl7x'; }
-function viewerUrl(){ if(S.viewerUrl) return S.viewerUrl; if(/claude/.test(location.hostname)) return ARTIFACT_URL; return location.href.split('#')[0].split('?')[0]+'#view'; }
+function viewerUrl(){ if(S.viewerUrl) return S.viewerUrl; if(/claude/.test(location.hostname)) return ARTIFACT_URL; return location.href.split('#')[0].split('?')[0]; }
 function setStatus(t){ SYNC.status=t; ['liveStatus','liveStatusV'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=t; }); }
 async function initSync(){
   // 1) claude.ai 아티팩트 안: room 캐패빌리티
   try{ if(window.claude?.use){ const u=await claude.use('user'); const r=await claude.use('room');
     if(r){ SYNC.room=r; SYNC.transport='room'; const owner=!!(u&&u.isOwner()); if(!owner) isHost=false; } } }catch(e){}
+  if(!SYNC.transport){ // 회사 서버: 기본은 참가자 화면, #host 로 열 때만 진행자
+    isHost = location.hash==='#host' || location.search.includes('host') || sessionStorage.getItem('host')==='1';
+    if(isHost) sessionStorage.setItem('host','1');
+  }
   if(sessionStorage.getItem('viewer')==='1'||location.hash==='#view'||location.search.includes('view')) isHost=false;
-  if(location.hash==='#host') isHost=true;
   if(!SYNC.transport) SYNC.transport='ntfy';
   document.body.classList.toggle('viewer',!isHost);
   if(isHost){ setStatus('LIVE 송출 준비'); startHeartbeat(); renderQR(); }
@@ -493,8 +495,8 @@ function renderQR(){
 function copyLink(){ const u=viewerUrl(); (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>setStatus('링크를 복사했습니다')).catch(()=>prompt('아래 링크를 복사하세요',u)); }
 function openViewerWindow(){ window.open(viewerUrl(),'_blank','noopener'); }
 function joinViewer(){ ac(); SFX.whoosh(); document.getElementById('joinOverlay').style.display='none'; document.documentElement.requestFullscreen?.().catch?.(()=>{}); }
-function toViewerMode(){ sessionStorage.setItem('viewer','1'); location.reload(); }
-function toHostMode(){ sessionStorage.removeItem('viewer'); location.hash='#host'; location.reload(); }
+function toViewerMode(){ sessionStorage.setItem('viewer','1'); sessionStorage.removeItem('host'); location.hash=''; location.reload(); }
+function toHostMode(){ sessionStorage.removeItem('viewer'); sessionStorage.setItem('host','1'); location.hash='#host'; location.reload(); }
 
 /* ================= 이벤트 적용 (진행자·뷰어 공통) ================= */
 function apply(ev,instant){
