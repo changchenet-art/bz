@@ -90,11 +90,11 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
   box-shadow:0 0 5vmin rgba(255,210,0,.4);margin-bottom:3vmin;animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 .congrats{font-size:6.5vmin;font-weight:900;color:var(--yellow);letter-spacing:.04em;text-shadow:0 .4vmin 0 var(--red2)}
-.namebox{margin:2vmin 0;padding:2vmin 7vmin;border:.7vmin solid var(--yellow);border-radius:2.5vmin;
+.namebox{margin:2vmin 0;padding:2vmin min(7vmin,5vw);border:.7vmin solid var(--yellow);border-radius:2.5vmin;
   background:rgba(0,0,0,.45);box-shadow:0 0 6vmin rgba(255,210,0,.45),inset 0 0 4vmin rgba(255,210,0,.15);
-  font-size:min(30vmin,30vw);font-weight:900;color:var(--yellow);line-height:1;letter-spacing:.02em;
+  font-size:min(30vmin,25vw);font-weight:900;color:var(--yellow);line-height:1;letter-spacing:.02em;
   text-shadow:0 .8vmin 0 var(--red2);animation:pop .7s cubic-bezier(.2,1.6,.4,1) .15s both;max-width:95vw;word-break:keep-all}
-.namebox.long{font-size:min(20vmin,22vw)}
+.namebox.long{font-size:min(20vmin,15vw)}
 #s-win .sub{margin:.5vmin 0}
 #s-win .row{margin-top:1vmin}
 
@@ -109,11 +109,11 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
 .tier.common{background:var(--silver);color:#1a1a1a}
 .tier.rare{background:var(--purple);color:#fff;box-shadow:0 0 4vmin var(--purple)}
 .tier.legend{background:linear-gradient(90deg,#ffd200,#ff8c00);color:#1a1a1a;box-shadow:0 0 6vmin #ffb300}
-.mission{font-size:min(11vmin,13vw);font-weight:900;line-height:1.15;color:#fff;max-width:92vw;word-break:keep-all;
+.mission{font-size:min(11vmin,13vw);font-weight:900;line-height:1.15;color:#fff;max-width:92vw;word-break:keep-all;background:rgba(0,10,60,.5);padding:1.5vmin 3vmin;border-radius:2vmin;
   text-shadow:0 .6vmin 0 rgba(0,0,0,.6)}
 .mission.legend{color:var(--yellow);text-shadow:0 0 5vmin #ffb300,0 .6vmin 0 var(--red2)}
 .mission.rare{color:#e4d2ff;text-shadow:0 0 5vmin var(--purple)}
-.detail{font-size:5vmin;color:#ffe9a8;margin-top:2.5vmin;font-weight:700;max-width:90vw;word-break:keep-all;line-height:1.4}
+.detail{font-size:5vmin;color:#ffe9a8;margin-top:2.5vmin;font-weight:700;background:rgba(0,10,60,.45);padding:1vmin 3vmin;border-radius:1.5vmin;max-width:90vw;word-break:keep-all;line-height:1.4}
 .detail b{color:var(--yellow);font-size:8vmin}
 .timer{font-size:22vmin;font-weight:900;line-height:1;color:var(--yellow);font-variant-numeric:tabular-nums;
   text-shadow:0 .8vmin 0 var(--red2);margin:1vmin 0}
@@ -138,6 +138,14 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
 #admin .btn{font-size:3vmin;padding:1.5vmin 4vmin;min-width:0;margin:1vmin}
 #admin small{color:#8a96d0;font-size:2.2vmin}
 #muteBtn{position:fixed;right:1.5vmin;bottom:1.5vmin;z-index:20;opacity:.35;font-size:3.5vmin;background:none;color:#fff}
+#qrWrap{display:flex;gap:3vmin;align-items:center;margin-top:3vmin;background:rgba(0,0,0,.35);padding:2vmin 3vmin;border-radius:2vmin;text-align:left}
+#qrBox{background:#fff;padding:1vmin;border-radius:1vmin;line-height:0}
+#qrBox img,#qrBox canvas{width:18vmin!important;height:18vmin!important}
+.vieweronly{display:none}
+body.viewer .hostonly,body.viewer .btn,body.viewer #gear,body.viewer .hint,body.viewer #s-title .btn{display:none!important}
+body.viewer .vieweronly{display:block}
+#joinOverlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,20,80,.92);flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer}
+body.viewer #joinOverlay{display:flex}
 @media (max-aspect-ratio:1/1){ .wheelwrap{width:92vw;height:92vw} #s-name .wheelwrap{width:88vw;height:88vw} .live{font-size:11vw} }
 </style>
 </head>
@@ -208,8 +216,11 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
   <h1>너야 너!</h1>
   <div class="sub">너야 너, 너 나와 🇲🇾✈️🇰🇷</div>
   <button class="btn" onclick="startGame()">START</button>
-  <div class="sub" style="font-size:2.8vmin;margin-top:4vmin;color:#9fb0ff" id="titleInfo"></div>
+  <div class="sub" style="font-size:2.8vmin;margin-top:3vmin;color:#9fb0ff" id="titleInfo"></div>
+  <div id="qrWrap" class="hostonly"><div id="qrBox"></div><div><div style="font-weight:800;font-size:2.8vmin">📱 참가자는 QR로 접속</div><div id="qrUrl" style="font-size:2vmin;color:#9fb0ff;word-break:break-all"></div><div id="liveStatus" style="font-size:2.2vmin;color:var(--yellow);margin-top:.5vmin"></div><button class="btn ghost" style="font-size:2.2vmin;padding:.8vmin 2vmin;margin-top:1vmin" onclick="toViewerMode()">👀 이 기기를 뷰어로</button></div></div>
+  <div class="vieweronly sub" style="font-size:4vmin;margin-top:2vmin">진행자가 시작하면 자동으로 화면이 바뀝니다 ✨<br><span id="liveStatusV" style="font-size:2.6vmin;color:var(--yellow)"></span></div>
 </section>
+<div id="joinOverlay" onclick="joinViewer()"><div class="badge">2026 충북경제포럼 말레이시아 연수</div><h1 style="font-size:12vmin">너야 너!</h1><div class="sub">화면을 탭하면 참여됩니다 👆<br><small>(소리가 켜집니다)</small></div></div>
 
 <!-- S1 이름 룰렛 -->
 <section class="screen" id="s-name">
@@ -235,7 +246,7 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
   <div class="big" id="shotTitle">원샷!!</div>
   <div class="sub" id="shotWho"></div>
   <div class="count" id="shotCount">3</div>
-  <div class="row"><button class="btn" id="shotBtn" onclick="shotCountdown()">카운트다운</button><button class="btn ghost" onclick="nextRound()">다음 라운드 →</button></div>
+  <div class="row"><button class="btn" id="shotBtn" onclick="hostCount()">카운트다운</button><button class="btn ghost" onclick="nextRound()">다음 라운드 →</button></div>
 </section>
 
 <!-- S4 미션 룰렛 -->
@@ -300,6 +311,8 @@ h1{font-size:9vmin;font-weight:900;color:var(--yellow);letter-spacing:-.02em;lin
     <div><label>재당첨 확률 감소 (1/N) — 한 번 걸린 사람은 1/N 로 줄어듦</label><input id="aDecay" type="number"></div>
     <div><label>1인 최대 당첨 횟수</label><input id="aMax" type="number"></div>
     <div><label>미션 제한시간(초)</label><input id="aTime" type="number"></div>
+    <div><label>생중계 채널 이름 (진행자·참가자 동일해야 함)</label><input id="aTopic" type="text"></div>
+    <div><label>참가자 접속 주소 (QR용, 비우면 자동)</label><input id="aViewerUrl" type="text"></div>
   </div>
   <h2>당첨 현황</h2>
   <div id="aStats" style="font-size:2.5vmin;color:#dfe6ff;line-height:1.7"></div>
@@ -329,7 +342,7 @@ function load(){
 }
 function fresh(){
   return { names:DEFAULT_NAMES.map(n=>({name:n,weight:BOOST.has(n)?2:1,count:0})), missions:DEFAULT_MISSIONS.map(m=>({...m})),
-    prob:{common:70,rare:25,legend:5}, decay:3, maxPicks:3, time:30, round:0, log:[], muted:false };
+    prob:{common:70,rare:25,legend:5}, decay:3, maxPicks:3, time:30, round:0, log:[], muted:false, topic:'nuya-neo-2026-kl7x', viewerUrl:'' };
 }
 function save(){ localStorage.setItem(KEY,JSON.stringify(S)); }
 let S = load();
@@ -375,7 +388,7 @@ function toggleMute(){ S.muted=!S.muted; save(); document.getElementById('muteBt
 (function stars(){ const w=document.getElementById('stars'); for(let i=0;i<90;i++){ const s=document.createElement('div'); s.className='star';
   s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*55+'%'; s.style.animationDelay=(-Math.random()*3)+'s';
   s.style.animationDuration=(2+Math.random()*3)+'s'; const sz=1+Math.random()*3; s.style.width=s.style.height=sz+'px'; w.appendChild(s);} })();
-function mood(m){ document.body.className='mood-'+m; }
+function mood(m){ const b=document.body; [...b.classList].filter(c=>c.startsWith('mood-')).forEach(c=>b.classList.remove(c)); b.classList.add('mood-'+m); }
 function flash(){ const f=document.getElementById('flash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
 // 불꽃놀이
 const FW=document.getElementById('fw'), fx=FW.getContext('2d'); let parts=[];
@@ -458,23 +471,96 @@ addEventListener('resize',()=>{ nameWheel&&nameWheel.draw(); missionWheel&&missi
 
 /* ================= 게임 흐름 ================= */
 let winner=null, mission=null, extra=null, timerId=null;
+let isHost=true; // 진행자(조작) / 뷰어(보기 전용)
+
+/* ================= 실시간 동기화 (뷰어 모드) ================= */
+const ARTIFACT_URL='https://claude.ai/artifact/XcoLgPAifSaLhJNwF6B5Hd';
+const SYNC={ transport:null, room:null, lastSeq:0, lastEv:null, hbTimer:null, es:null, status:'off' };
+function topic(){ return S.topic||'nuya-neo-2026-kl7x'; }
+function viewerUrl(){ if(S.viewerUrl) return S.viewerUrl; if(/claude/.test(location.hostname)) return ARTIFACT_URL; return location.href.split('#')[0].split('?')[0]+'#view'; }
+function setStatus(t){ SYNC.status=t; ['liveStatus','liveStatusV'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=t; }); }
+async function initSync(){
+  // 1) claude.ai 아티팩트 안: room 캐패빌리티
+  try{ if(window.claude?.use){ const u=await claude.use('user'); const r=await claude.use('room');
+    if(r){ SYNC.room=r; SYNC.transport='room'; const owner=!!(u&&u.isOwner()); if(!owner) isHost=false; } } }catch(e){}
+  if(sessionStorage.getItem('viewer')==='1'||location.hash==='#view'||location.search.includes('view')) isHost=false;
+  if(location.hash==='#host') isHost=true;
+  if(!SYNC.transport) SYNC.transport='ntfy';
+  document.body.classList.toggle('viewer',!isHost);
+  if(isHost){ setStatus('LIVE 송출 준비'); startHeartbeat(); renderQR(); }
+  else { setStatus('연결 중…'); listen(); }
+}
+function broadcast(ev,hb){
+  if(!isHost) return; if(!hb){ ev.seq=++SYNC.lastSeq; SYNC.lastEv=ev; } ev.ts=Date.now();
+  const body=JSON.stringify(ev);
+  if(SYNC.transport==='room'){ try{ SYNC.room.emit('ev',ev); setStatus('LIVE ● 송출 중'); }catch(e){ setStatus('송출 오류'); } }
+  else { fetch('https://ntfy.sh/'+topic(),{method:'POST',body,headers:{'Content-Type':'text/plain'}}).then(()=>setStatus('LIVE ● 송출 중')).catch(()=>setStatus('송출 실패(인터넷 확인)')); }
+}
+function startHeartbeat(){ clearInterval(SYNC.hbTimer); SYNC.hbTimer=setInterval(()=>{ if(SYNC.lastEv) broadcast({...SYNC.lastEv,hb:true},true); },15000); }
+function onRemote(ev){
+  if(!ev||typeof ev.seq!=='number') return;
+  if(ev.seq<=SYNC.lastSeq && !(ev.seq===SYNC.lastSeq&&SYNC.lastSeq===0)) return;
+  if(ev.seq<SYNC.lastSeq) return; if(ev.seq===SYNC.lastSeq) return;
+  SYNC.lastSeq=ev.seq; const instant=ev.hb||(Date.now()-(ev.ts||0)>4000);
+  setStatus('LIVE ● 수신 중'); apply(ev,instant);
+}
+function listen(){
+  if(SYNC.transport==='room'){ try{ SYNC.room.on('ev',(d)=>onRemote(d&&d.data!==undefined&&d.topic?d.data:d)); }catch(e){} return; }
+  const connect=()=>{ try{ SYNC.es&&SYNC.es.close(); }catch(e){}
+    const es=new EventSource('https://ntfy.sh/'+topic()+'/sse?since=10m'); SYNC.es=es;
+    es.onmessage=(m)=>{ try{ const msg=JSON.parse(m.data); if(msg.event&&msg.event!=='message') return; onRemote(JSON.parse(msg.message)); }catch(e){} };
+    es.onerror=()=>{ setStatus('재연결 중…'); es.close(); setTimeout(connect,3000); }; };
+  connect();
+}
+function renderQR(){
+  const box=document.getElementById('qrBox'); if(!box) return; const url=viewerUrl();
+  document.getElementById('qrUrl').textContent=url; box.innerHTML='';
+  const draw=()=>{ try{ new QRCode(box,{text:url,width:160,height:160,correctLevel:QRCode.CorrectLevel.M}); }catch(e){} };
+  if(window.QRCode) draw(); else { const sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'; sc.onload=draw; document.head.appendChild(sc); }
+}
+function joinViewer(){ ac(); SFX.whoosh(); document.getElementById('joinOverlay').style.display='none'; document.documentElement.requestFullscreen?.().catch?.(()=>{}); }
+function toViewerMode(){ sessionStorage.setItem('viewer','1'); location.reload(); }
+function toHostMode(){ sessionStorage.removeItem('viewer'); location.hash='#host'; location.reload(); }
+
+/* ================= 이벤트 적용 (진행자·뷰어 공통) ================= */
+function apply(ev,instant){
+  switch(ev.t){
+    case 'title': mood('wait'); go('s-title'); break;
+    case 'round': if(!isHost){ S.round=ev.round; if(ev.names) S.names=ev.names.map(n=>({name:n,weight:1,count:0})); } doRound(); break;
+    case 'spinName': if(!isHost&&ev.names) S.names=ev.names.map(n=>({name:n,weight:1,count:0})); if(cur!=='s-name') doRound(); doSpinName(ev.idx,ev.dur,instant); break;
+    case 'afterWin': doAfterWin(); break;
+    case 'shot': showShot(ev.who,ev.title); break;
+    case 'count': shotCountdown(); break;
+    case 'mroulette': if(!isHost){ if(ev.missions) S.missions=ev.missions; if(ev.who) winner={name:ev.who}; } showMissionRoulette(); break;
+    case 'spinMission': if(!isHost){ if(ev.missions) S.missions=ev.missions; if(ev.who) winner={name:ev.who}; if(cur!=='s-mroulette') showMissionRoulette(); } doSpinMission(ev.idx,ev.dur,ev.extra,instant); break;
+    case 'timer': startTimer(ev.sec); break;
+    case 'judge': judge(ev.ok); break;
+    case 'end': if(!isHost&&ev.log) S.log=ev.log; showEnd(); break;
+  }
+}
+
+/* ================= 게임 흐름 ================= */
 function startGame(){ ac(); SFX.whoosh(); nextRound(); }
-function nextRound(){
-  clearInterval(timerId); S.round++; save(); mood('wait');
+function nextRound(){ if(!isHost) return; S.round++; save(); const ev={t:'round',round:S.round,names:S.names.map(p=>p.name)}; apply(ev); broadcast(ev); }
+function doRound(){
+  clearInterval(timerId); mood('wait');
   document.getElementById('roundBadge').textContent='ROUND '+S.round+(S.round===1?' · 원샷':' · 미션');
   document.getElementById('liveName').textContent='너야 너… 누구?'; document.getElementById('spinBtn').disabled=false;
   buildNameWheel(); go('s-name');
 }
 function pickWeighted(ws){ const t=ws.reduce((a,b)=>a+b,0); if(t<=0) return -1; let r=Math.random()*t; for(let i=0;i<ws.length;i++){ r-=ws[i]; if(r<0) return i; } return ws.length-1; }
 function spinName(){
-  if(nameWheel.spinning) return; ac();
+  if(!isHost||nameWheel.spinning) return; ac();
   const ws=S.names.map(p=> p.count>=S.maxPicks?0 : (p.weight||0)/Math.pow(S.decay,p.count));
   const idx=pickWeighted(ws); if(idx<0){ alert('뽑을 수 있는 사람이 없습니다. 설정에서 횟수를 초기화하세요.'); return; }
-  document.getElementById('spinBtn').disabled=true; SFX.drum();
-  const dur=6500+Math.random()*1500; let hb=false;
-  nameWheel.spinTo(idx,dur,(p,t)=>{ document.getElementById('liveName').textContent=S.names[p].name; if(t<.8) SFX.tick(); else { SFX.tick(); if(!hb){hb=true;} } },
-    (i)=>{ winner=S.names[i]; winner.count++; save(); showWin(); });
-  // 심장박동 (마지막 2초)
+  const ev={t:'spinName',idx,dur:Math.round(6500+Math.random()*1500),names:S.names.map(p=>p.name)}; broadcast(ev); apply(ev,false);
+}
+function doSpinName(idx,dur,instant){
+  document.getElementById('spinBtn').disabled=true;
+  const done=(i)=>{ winner=S.names[i]; if(isHost){ winner.count++; S.log.push({round:S.round,name:winner.name,mission:S.round===1?'원샷(1라운드)':'',result:''}); save(); } showWin(); };
+  if(instant){ nameWheel.spinning=false; done(idx); return; }
+  SFX.drum();
+  nameWheel.spinTo(idx,dur,(p)=>{ document.getElementById('liveName').textContent=S.names[p].name; SFX.tick(); }, done);
   setTimeout(()=>{ let k=0; const h=setInterval(()=>{ if(!nameWheel.spinning||k++>5){clearInterval(h);return;} SFX.heart(); },450); }, dur-2300);
 }
 function showWin(){
@@ -484,14 +570,15 @@ function showWin(){
   const first=S.round===1;
   document.getElementById('winMsg').textContent= first? '첫 번째 당첨자는 원샷입니다! 🍻' : '너야 너, 너 나와! 직접 미션 룰렛을 돌립니다';
   const b=document.getElementById('winBtn'); b.textContent= first?'원샷!':'미션 룰렛으로 →'; b.className='btn '+(first?'red':'');
-  S.log.push({round:S.round,name:winner.name,mission:first?'원샷(1라운드)':'',result:''}); save();
   mood(first?'shot':'mission'); go('s-win');
 }
-function afterWin(){ if(S.round===1) showShot(winner.name,'원샷!!'); else showMissionRoulette(); }
+function afterWin(){ if(!isHost) return; const ev={t:'afterWin'}; apply(ev); broadcast(ev); }
+function doAfterWin(){ if(S.round===1) showShot(winner.name,'원샷!!'); else showMissionRoulette(); }
 function showShot(who,title){
   mood('shot'); document.getElementById('shotTitle').textContent=title; document.getElementById('shotWho').textContent=who+' 님';
   document.getElementById('shotCount').textContent='🍺'; document.getElementById('shotBtn').disabled=false; go('s-shot');
 }
+function hostCount(){ if(!isHost) return; const ev={t:'count'}; apply(ev); broadcast(ev); }
 function shotCountdown(){
   const el=document.getElementById('shotCount'); let n=3; document.getElementById('shotBtn').disabled=true;
   el.textContent=n; SFX.beep();
@@ -501,10 +588,18 @@ function showMissionRoulette(){
   mood('mission'); buildMissionWheel(); document.getElementById('mWho').textContent=winner.name; document.getElementById('mspinBtn').disabled=false; go('s-mroulette');
 }
 function spinMission(){
-  if(missionWheel.spinning) return; ac();
-  const ws=missionWheel.items.map(i=>i.span); const idx=pickWeighted(ws);
-  document.getElementById('mspinBtn').disabled=true; SFX.drum();
-  missionWheel.spinTo(idx,5000+Math.random()*1000,()=>SFX.tick(),(i)=>{ mission=S.missions[i]; revealMission(); });
+  if(!isHost||missionWheel.spinning) return; ac();
+  const ws=missionWheel.items.map(i=>i.span); const idx=pickWeighted(ws); const m=S.missions[idx];
+  let ex=null;
+  if(/성씨/.test(m.text)){ const c=surnameCandidates(); ex={type:'surname',s:c.length?c[Math.floor(Math.random()*c.length)]:'김'}; }
+  else if(/칭찬/.test(m.text)){ const o=S.names.filter(p=>p.name!==winner.name); ex={type:'praise',target:o[Math.floor(Math.random()*o.length)].name}; }
+  const ev={t:'spinMission',idx,dur:Math.round(5000+Math.random()*1000),extra:ex,missions:S.missions,who:winner.name}; broadcast(ev); apply(ev,false);
+}
+function doSpinMission(idx,dur,ex,instant){
+  document.getElementById('mspinBtn').disabled=true;
+  const done=(i)=>{ mission=S.missions[i]; extra=ex; revealMission(); };
+  if(instant){ missionWheel.spinning=false; done(idx); return; }
+  SFX.drum(); missionWheel.spinTo(idx,dur,()=>SFX.tick(),done);
 }
 function surnameCandidates(){ const m={}; S.names.forEach(p=>{ const s=p.name[0]; m[s]=(m[s]||0)+1; }); return Object.keys(m).filter(s=>m[s]>=3); }
 function revealMission(){
@@ -514,14 +609,12 @@ function revealMission(){
   const tierEl=document.getElementById('mTier'); tierEl.className='tier '+t; tierEl.textContent={common:'일반',rare:'★ 레어',legend:'★★★ 전설'}[t];
   document.getElementById('mWho2').textContent=winner.name+' 님의 미션';
   const mt=document.getElementById('mText'); mt.className='mission '+t; mt.textContent=mission.text;
-  const d=document.getElementById('mDetail'); extra=null; let timeLimit=S.time;
-  if(/성씨/.test(mission.text)){
-    const cands=surnameCandidates(); const s=cands.length?cands[Math.floor(Math.random()*cands.length)]:'김';
-    const cnt=S.names.filter(p=>p.name[0]===s).length; extra={type:'surname',s};
-    d.innerHTML=`오늘의 성씨: <b>${s}</b> 씨 (명단에 ${cnt}명) · 3명 찾아 <b>10초</b> 안에 건배!<br><small>실패 시 벌칙: "난 좀 이뻐~" 포즈</small>`; timeLimit=10;
-  } else if(/칭찬/.test(mission.text)){
-    const others=S.names.filter(p=>p!==winner); const tgt=others[Math.floor(Math.random()*others.length)]; extra={type:'praise',target:tgt.name};
-    d.innerHTML=`칭찬 대상: <b>${tgt.name}</b> 님 · 30초 안에 칭찬 3가지!`;
+  const d=document.getElementById('mDetail'); let timeLimit=S.time;
+  if(extra?.type==='surname'){
+    const cnt=S.names.filter(p=>p.name[0]===extra.s).length;
+    d.innerHTML=`오늘의 성씨: <b>${extra.s}</b> 씨 (명단에 ${cnt}명) · 3명 찾아 <b>10초</b> 안에 건배!<br><small>실패 시 벌칙: "난 좀 이뻐~" 포즈</small>`; timeLimit=10;
+  } else if(extra?.type==='praise'){
+    d.innerHTML=`칭찬 대상: <b>${extra.target}</b> 님 · 30초 안에 칭찬 3가지!`;
   } else if(t==='legend'){
     d.innerHTML=`대타를 지목하세요! 지목된 사람이 미션 룰렛을 대신 돌립니다`;
   } else { d.textContent=mission.sub||''; }
@@ -530,36 +623,39 @@ function revealMission(){
   if(t==='legend'){
     btns.innerHTML=`<button class="btn" onclick="substitute()">대타가 룰렛 돌리기 →</button>`;
   } else {
-    btns.innerHTML=`<button class="btn" id="tBtn" onclick="startTimer(${timeLimit})">⏱ ${timeLimit}초 시작</button>
-      <button class="btn" style="background:linear-gradient(180deg,#5dff9a,#1fbf63);box-shadow:0 .8vmin 0 #0d7a3c" onclick="judge(true)">성공 👏</button>
-      <button class="btn red" onclick="judge(false)">실패 ✖</button>`;
+    btns.innerHTML=`<button class="btn" id="tBtn" onclick="hostTimer(${timeLimit})">⏱ ${timeLimit}초 시작</button>
+      <button class="btn" style="background:linear-gradient(180deg,#5dff9a,#1fbf63);box-shadow:0 .8vmin 0 #0d7a3c" onclick="hostJudge(true)">성공 👏</button>
+      <button class="btn red" onclick="hostJudge(false)">실패 ✖</button>`;
   }
-  S.log[S.log.length-1].mission=mission.text+(extra?.s?`(${extra.s}씨)`:'')+(extra?.target?`(→${extra.target})`:''); save();
+  if(isHost&&S.log.length){ S.log[S.log.length-1].mission=mission.text+(extra?.s?`(${extra.s}씨)`:'')+(extra?.target?`(→${extra.target})`:''); save(); }
   go('s-mission');
 }
+function hostTimer(sec){ if(!isHost) return; const ev={t:'timer',sec}; apply(ev); broadcast(ev); }
 function startTimer(sec){
-  const tm=document.getElementById('mTimer'); tm.style.display='block'; let n=sec; tm.textContent=n; document.getElementById('tBtn').disabled=true;
+  const tm=document.getElementById('mTimer'); tm.style.display='block'; let n=sec; tm.textContent=n; const tb=document.getElementById('tBtn'); if(tb) tb.disabled=true;
   clearInterval(timerId); SFX.beep();
   timerId=setInterval(()=>{ n--; tm.textContent=n; if(n<=5) tm.classList.add('danger'); SFX.tock(n);
     if(n<=0){ clearInterval(timerId); SFX.buzzer(); tm.textContent='TIME!'; } },1000);
 }
 function substitute(){
-  // 대타: 다음 미션 룰렛을 대타가 돌림 (당첨자 이름은 그대로 기록, 라운드 유지)
-  SFX.whoosh(); S.log[S.log.length-1].result='대타 지목'; save();
+  if(!isHost) return; SFX.whoosh(); if(S.log.length) S.log[S.log.length-1].result='대타 지목'; save();
   const n=prompt('대타로 지목된 사람 이름을 입력하세요 (화면 표시용, 생략 가능)','');
-  if(n) winner={...winner,name:n+' (대타)'}; showMissionRoulette();
+  if(n) winner={...winner,name:n+' (대타)'};
+  const ev={t:'mroulette',who:winner.name,missions:S.missions}; apply(ev); broadcast(ev);
 }
+function hostJudge(ok){ if(!isHost) return; const ev={t:'judge',ok}; apply(ev); broadcast(ev); }
 function judge(ok){
-  clearInterval(timerId); const log=S.log[S.log.length-1]; log.result=ok?'성공':'실패'; save();
+  clearInterval(timerId); if(isHost&&S.log.length){ S.log[S.log.length-1].result=ok?'성공':'실패'; save(); }
   const icon=document.getElementById('resIcon'), title=document.getElementById('resTitle'), sub=document.getElementById('resSub'), btn=document.getElementById('resBtn');
   if(ok){ mood('mission'); icon.textContent='👏'; title.textContent='미션 성공!'; sub.textContent=winner.name+' 님, 멋집니다!'; SFX.applause(); confetti(); fireworks(5);
     btn.textContent='다음 라운드 →'; btn.onclick=nextRound; }
   else { mood('shot'); SFX.buzzer(); icon.textContent='😱'; title.textContent='미션 실패!';
     if(extra?.type==='surname'){ sub.textContent='벌칙: "난 좀 이뻐~" 포즈 💅'; btn.textContent='벌칙 수행 후 다음 →'; setTimeout(SFX.pose,700); btn.onclick=nextRound; }
-    else { sub.textContent='벌칙: 원샷!'; btn.textContent='벌칙 원샷 →'; btn.onclick=()=>showShot(winner.name,'벌칙 원샷!!'); }
+    else { sub.textContent='벌칙: 원샷!'; btn.textContent='벌칙 원샷 →'; btn.onclick=()=>{ const ev={t:'shot',who:winner.name,title:'벌칙 원샷!!'}; apply(ev); broadcast(ev); }; }
   }
   go('s-result');
 }
+function hostEnd(){ if(!isHost) return; const ev={t:'end',log:S.log}; apply(ev); broadcast(ev); }
 function showEnd(){
   const cnt={}; S.log.forEach(l=>cnt[l.name.replace(' (대타)','')]=(cnt[l.name.replace(' (대타)','')]||0)+1);
   const mvp=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];
@@ -568,7 +664,7 @@ function showEnd(){
   mood('legend'); SFX.fanfare(); fireworks(10); go('s-end');
 }
 function resetCounts(){ if(!confirm('당첨 횟수를 초기화할까요?')) return; S.names.forEach(p=>p.count=0); save(); renderAdmin(); }
-function resetAll(){ if(!confirm('모든 기록과 설정을 초기화할까요?')) return; S=fresh(); save(); closeAdmin(); location.reload(); }
+function resetAll(){ if(!confirm('모든 기록과 설정을 초기화할까요?')) return; const t=S.topic; S=fresh(); S.topic=t; save(); closeAdmin(); location.reload(); }
 
 /* ================= 관리자 ================= */
 function openAdmin(){ renderAdmin(); document.getElementById('admin').classList.add('on'); }
@@ -576,27 +672,28 @@ function closeAdmin(){ document.getElementById('admin').classList.remove('on'); 
 function renderAdmin(){
   document.getElementById('aNames').value=S.names.map(p=>p.weight===1?p.name:`${p.name},${p.weight}`).join('\n');
   document.getElementById('aMissions').value=S.missions.map(m=>`${m.tier}|${m.text}|${m.sub||''}`).join('\n');
-  aCommon.value=S.prob.common; aRare.value=S.prob.rare; aLegend.value=S.prob.legend; aDecay.value=S.decay; aMax.value=S.maxPicks; aTime.value=S.time;
+  aTopic.value=S.topic||''; aViewerUrl.value=S.viewerUrl||''; aCommon.value=S.prob.common; aRare.value=S.prob.rare; aLegend.value=S.prob.legend; aDecay.value=S.decay; aMax.value=S.maxPicks; aTime.value=S.time;
   document.getElementById('aStats').innerHTML=`라운드: ${S.round} · 당첨: `+S.names.filter(p=>p.count).map(p=>`${p.name} ${p.count}회`).join(', ')+(S.names.some(p=>p.count)?'':'없음');
 }
 function saveAdmin(){
   const old=Object.fromEntries(S.names.map(p=>[p.name,p.count]));
   S.names=document.getElementById('aNames').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{ const [n,w]=l.split(','); return {name:n.trim(),weight:w===undefined?1:(parseFloat(w)||0),count:old[n.trim()]||0}; });
   S.missions=document.getElementById('aMissions').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{ const [tier,text,sub]=l.split('|'); return {tier:(tier||'common').trim(),text:(text||'').trim(),sub:(sub||'').trim()}; }).filter(m=>m.text);
-  S.prob={common:+aCommon.value||0,rare:+aRare.value||0,legend:+aLegend.value||0}; S.decay=+aDecay.value||1; S.maxPicks=+aMax.value||99; S.time=+aTime.value||30;
+  S.prob={common:+aCommon.value||0,rare:+aRare.value||0,legend:+aLegend.value||0}; S.decay=+aDecay.value||1; S.maxPicks=+aMax.value||99; S.time=+aTime.value||30; S.topic=aTopic.value.trim(); S.viewerUrl=aViewerUrl.value.trim();
   save(); closeAdmin(); buildNameWheel(); updateTitle();
 }
 function updateTitle(){ document.getElementById('titleInfo').textContent=`참가자 ${S.names.filter(p=>p.weight>0).length}명 · 미션 ${S.missions.length}개`+(S.round?` · 진행 중 ROUND ${S.round}`:''); }
 
 /* ================= 키보드 ================= */
 addEventListener('keydown',e=>{
+  if(!isHost) return;
   if(document.getElementById('admin').classList.contains('on')){ if(e.key==='Escape') closeAdmin(); return; }
   if(e.key===' '){ e.preventDefault();
-    ({'s-title':startGame,'s-name':spinName,'s-win':afterWin,'s-shot':()=>{ if(document.getElementById('shotBtn').disabled) nextRound(); else shotCountdown(); },
+    ({'s-title':startGame,'s-name':spinName,'s-win':afterWin,'s-shot':()=>{ if(document.getElementById('shotBtn').disabled) nextRound(); else hostCount(); },
       's-mroulette':spinMission,'s-result':()=>document.getElementById('resBtn').click(),'s-end':()=>go('s-name')})[cur]?.(); }
   if(e.key==='f'||e.key==='F'){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.(); }
   if(e.key==='a'||e.key==='A') openAdmin();
-  if(e.key==='e'||e.key==='E') showEnd();
+  if(e.key==='e'||e.key==='E') hostEnd();
   if(e.key==='n'||e.key==='N') nextRound();
 });
 // 모바일: 제목 길게 누르면 설정
@@ -606,6 +703,7 @@ let pressT; document.querySelector('#s-title h1').addEventListener('touchstart',
 document.getElementById('muteBtn').textContent=S.muted?'🔇':'🔊';
 updateTitle(); buildNameWheel();
 if(S.round>0){ document.getElementById('titleInfo').textContent+=' (START를 누르면 이어서 진행)'; }
+initSync();
 </script>
 </body>
 </html>
